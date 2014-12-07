@@ -1,0 +1,43 @@
+
+<div class="report-header form-group-lg">
+  <h3><a href="#" editable-text="main.title">{{ main.title || 'title' }}</a></h3>
+  <p class="lead">
+    <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a>
+  </p>
+</div>
+
+<div class="row container-fluid report-tabs">
+  <button class="btn btn-primary pull-right" ng-click="main.refresh()">
+    <i class="glyphicon glyphicon-play"></i> Refresh result
+  </button>
+  <tabset>
+    <tab heading="Result" select="main.refreshTabs()" active="main.showResult">
+      <div class="col-xs-12" ng-include="main.viewPath">
+      </div>
+    </tab>
+    <tab heading="Data" select="main.refreshTabs()">
+      <div class="col-xs-12">
+        <div class="code-mirror"
+          ng-model="main.dataText"
+          ui-refresh="main.uid"
+          ui-codemirror="{
+            lineNumbers: true,
+            lineWrapping : true
+          }"></div>
+      </div>
+    </tab>
+    <tab heading="Presentation" select="main.refreshTabs()">
+      <div class="col-xs-12">
+        <div class="code-mirror"
+          ng-model="main.viewText"
+          ui-refresh="main.uid"
+          ui-codemirror="{
+            lineNumbers: true,
+            lineWrapping : true,
+            mode: 'htmlmixed'
+          }"></div>
+      </div>
+    </tab>
+  </tabset>
+
+</div>
