@@ -1,0 +1,4 @@
+{
+	"name": "Dynamic Hexbin",
+	"description": "Computing hexbins from a constantly-fluctuating sample of 2,000 random points."
+}

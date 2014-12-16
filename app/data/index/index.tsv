@@ -1,0 +1,4 @@
+name	url	description
+bars	bars	A simple SVG bar chart. Part of the tutorial series Let’s Make a Bar Chart.
+hexbin	hexbin	Computing hexbins from a constantly-fluctuating sample of 2,000 random points.
+Marey’s Trains II	trains	A variation of E.J. Marey’s graphical train schedule where color and slope redundantly encode train speed. The steeper and more orange the line, the faster the train.

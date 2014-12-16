@@ -1,41 +1,41 @@
 
 <div class="report-header form-group-lg">
-  <h3><a href="#" editable-text="main.title">{{ main.title || 'title' }}</a></h3>
+  <h3><a href="#" editable-text="main.name">{{ main.name || 'name' }}</a></h3>
   <p class="lead">
     <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a>
   </p>
 </div>
 
 <div class="row container-fluid report-tabs">
-  <button class="btn btn-primary pull-right" ng-click="main.refresh()">
-    <i class="glyphicon glyphicon-play"></i> Refresh result
-  </button>
+
+  <div class="pull-right">
+
+    <button class="btn btn-primary" ng-click="main.refresh()">
+      <i class="glyphicon glyphicon-play"></i> Refresh result
+    </button>
+
+    <button class="btn btn-primary" svg-download="{{main.hasSvg}}" title="mysvg" ng-show="main.hasSvg">
+      Download svg
+    </button>
+
+  </div>
+
+
   <tabset>
-    <tab heading="Result" select="main.refreshTabs()" active="main.showResult">
-      <div class="col-xs-12" ng-include="main.viewPath">
+    <tab id="result" heading="Result" select="main.refreshTabs()" active="main.showResult">
+      <div class="col-xs-12" ng-bind-html-template="main.view" has-svg="main.hasSvg">
       </div>
     </tab>
-    <tab heading="Data" select="main.refreshTabs()">
+    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in files" ng-if="file.text !== undefined">
       <div class="col-xs-12">
         <div class="code-mirror"
-          ng-model="main.dataText"
-          ui-refresh="main.uid"
-          ui-codemirror="{
-            lineNumbers: true,
-            lineWrapping : true
-          }"></div>
-      </div>
-    </tab>
-    <tab heading="Presentation" select="main.refreshTabs()">
-      <div class="col-xs-12">
-        <div class="code-mirror"
-          ng-model="main.viewText"
-          ui-refresh="main.uid"
-          ui-codemirror="{
-            lineNumbers: true,
-            lineWrapping : true,
-            mode: 'htmlmixed'
-          }"></div>
+        ng-model="file.text"
+        ui-refresh="main.uid"
+        ui-codemirror="{
+          lineNumbers: true,
+          lineWrapping : true,
+          mode: 'htmlmixed'
+        }"></div>
       </div>
     </tab>
   </tabset>

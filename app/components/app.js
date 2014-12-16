@@ -16,17 +16,17 @@ angular
     'ngTouch',
     'ui.bootstrap',
     'ui.codemirror',
-    'xeditable'
+    'xeditable',
+    'hc.downloader'
   ])
   .config(function ($routeProvider) {
 
     $routeProvider
-      .when('/', {
+      .when('/:id/', {
         templateUrl: 'components/main/main.html',
         controller: 'MainCtrl as main',
         resolve: {
-          view: function($http) { return $http.get("views/bars3.html"); },
-          data: function($http) { return $http.get("data/bars.tsv"); }
+          index: function($route, DataService) { return DataService.load($route.current.params.id); }
         }
       })
       .when('/about', {
@@ -34,8 +34,9 @@ angular
         controller: 'AboutCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/index'
       });
+
   })
   .run(function(editableOptions) {
     editableOptions.theme = 'bs3';

@@ -26,12 +26,10 @@
     <!-- Add your site or application content here -->
     <div class="container">
       <div class="header">
-        <ul class="nav nav-pills pull-right">
-          <li class="active"><a ng-href="#">Home</a></li>
-          <li><a ng-href="#/about">About</a></li>
-          <li><a ng-href="#">Contact</a></li>
-        </ul>
-        <h3 class="text-muted">myApp</h3>
+        <!-- ul class="nav nav-pills pull-right">
+          <li class="active"><a ng-href="#/index">Home</a></li>
+        </ul -->
+        <h3 class="text-muted"><a ng-href="#/index">viz-bin</a></h3>
       </div>
 
       <div ng-view=""></div>
@@ -79,11 +77,14 @@
     <script src="bower_components/codemirror/mode/javascript/javascript.js"></script>
     <script src="bower_components/codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script src="bower_components/codemirror/mode/css/css.js"></script>
+    <script src="bower_components/angular-mocks/angular-mocks.js"></script>
     <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
     <script src="bower_components/papaparse/papaparse.js"></script>
+    <script src="bower_components/FileSaver/FileSaver.js"></script>
+    <script src="bower_components/angular-downloadsvg-directive/angular-downloadsvg-directive.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

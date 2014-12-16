@@ -1,0 +1,5 @@
+{
+	"name": "Index",
+	"description": "Index",
+	"files": ["index.html","index.tsv"]
+}
