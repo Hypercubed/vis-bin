@@ -1,3 +1,6 @@
+<!-- from http://bl.ocks.org/mbostock/5544621
+https://gist.github.com/mbostock/5544621 -->
+
 <style>
 
 svg {
@@ -77,7 +80,7 @@ svg {
   .attr("width", width)
   .attr("height", height + margin.top + margin.bottom);
 
-  var trains = files["schedule.tsv"].data.map(type);
+  var trains = files["trains/schedule.tsv"].data.map(type);
 
     y.domain(d3.extent(stations, function(d) { return d.distance; }));
 

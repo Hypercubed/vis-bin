@@ -15,53 +15,70 @@ angular.module('myApp')
     var files = {};
 
     function clear() {
-      for (var key in files) delete files[key];
+      for (var key in files) {delete files[key];}
     }
 
-    function loadFile(id, file) {
-      $log.debug('Loading ',id,file);
+    function loadFile(file) {
 
-      return $http.get('data/'+id+'/'+file).success(function(data) {
-        if (file.indexOf('.json') > -1) {
-          files[file] = { data: data };
-        } else {
-          files[file] = { text: data };
-          if (file.indexOf('.tsv') > -1) {  // TODO: tsv, cvs, json, txt, html
-            var parse = Papa.parse(data, {header: true, delimiter: '\t', skipEmptyLines: true});
-            angular.extend(files[file], parse);
-          }
-        }
+      if (!angular.isObject(file)) {
+        file = { name: file, show: true };
+      }
+
+      angular.extend(file, {
+        path: file.name.split('/')[0]
       });
+
+      $log.debug('Loading ',file.name, file);
+
+      var transform = function(data) {
+        file.text = data;
+        process(file);
+        return file;
+      };
+
+      return $http.get('data/'+file.name, {transformResponse: transform})
+        .success(function(_file) {
+          files[_file.name] = _file;
+        });
     }
 
-    function reparse() {  // TODO: combine with loadFile
-      angular.forEach(files, function(file, filename) {
-        if (filename.indexOf('.tsv') > -1) {
-          var parse = Papa.parse(file.text, {header: true, delimiter: '\t', skipEmptyLines: true});
-          angular.extend(file, parse);
-        }
-      });
+    function process(file) {
+      var ext = file.name.split('.').pop();
+      if (['tsv'].indexOf(ext) > -1) {
+        var parse = Papa.parse(file.text, {header: true, delimiter: '\t', skipEmptyLines: true});
+        angular.extend(file, parse);
+      } else if (ext === 'json') {
+        file.data = angular.fromJson(file.text);
+      }
+    }
+
+    function reparse() {
+      angular.forEach(files, process);
     }
 
     function load(id) {
 
       clear();
 
-      return loadFile(id, 'index.json')
+      return loadFile({name: id+'/index.json', show: false})
         .then(function(res) {
-          res.data.files = res.data.files || ['index.html'];
-          return loadFiles(id, res.data.files);
+          var files = res.data.data.files || [id+'/index.html'];
+
+          var q = files.map(function(file) {
+
+            if (!angular.isObject(file)) {
+              file = { name: file, show: true };
+            }
+
+            if (file.name.indexOf('/') < 0) {
+              file.name = id+'/'+file.name;
+            }
+
+            return loadFile(file);
+          });
+
+          return $q.all(q);
         });
-    }
-
-    function loadFiles(id, files) {
-
-      var p = files.map(function(file) {
-        return loadFile(id, file);
-      });
-
-      return $q.all(p);
-
     }
 
     return {
@@ -71,21 +88,19 @@ angular.module('myApp')
     };
 
   })
-  .controller('MainCtrl', function ($scope, $log, $timeout, $templateCache, $window, DataService) {
+  .controller('MainCtrl', function ($scope, $log, $timeout, $templateCache, $window, $routeParams, DataService) {
 
     var main = this;
 
-    angular.extend(main, DataService.files['index.json'].data);
+    angular.extend(main, DataService.files[$routeParams.id+'/index.json'].data);
 
     main.files = $scope.files = $window.files = DataService.files;
 
     main.viewPath = '';
 
-    angular.forEach(main.files, function(file, filename) { /// TEMP
-      if (filename.indexOf('.tsv') > -1) {
-        main.dataKey = filename;
-      } else {
-        main.viewKey = filename;
+    angular.forEach(main.files, function(file) { /// TEMP
+      if (file.name.indexOf('.html') > -1 && !main.viewKey) {
+        main.viewKey = file.name;
         main.view = file.text;
       }
     });
@@ -109,6 +124,8 @@ angular.module('myApp')
       //var view = DataService.files[main.viewKey].text;
 
       main.view = '';
+
+      console.log(main.viewKey);
 
       $timeout(function() {
         main.view = DataService.files[main.viewKey].text;
@@ -134,7 +151,7 @@ angular.module('myApp')
       scope: {
         hasSvg: '='
       },
-      link: function (scope, element, attr) {
+      link: function (scope, element) {
 
 
         var watch = function() {
@@ -149,7 +166,7 @@ angular.module('myApp')
 
         });
       }
-    }
+    };
 
 })
 

@@ -26,7 +26,7 @@
       <div class="col-xs-12" ng-bind-html-template="main.view" has-svg="main.hasSvg">
       </div>
     </tab>
-    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in files" ng-if="file.text !== undefined">
+    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in files" ng-if="file.show !== false">
       <div class="col-xs-12">
         <div class="code-mirror"
         ng-model="file.text"

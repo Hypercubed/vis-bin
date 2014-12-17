@@ -1,5 +1,11 @@
 {
 	"name": "Index",
-	"description": "Index",
-	"files": ["index.html","index.tsv"]
+	"description": "Index of Visualizations",
+	"files": [
+		"index.html",
+		{ "name": "bars/index.json", "show": false },
+		{ "name": "barsII/index.json", "show": false },
+		{ "name": "hexbin/index.json", "show": false },
+		{ "name": "trains/index.json", "show": false }
+	]
 }
