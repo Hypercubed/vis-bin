@@ -18,8 +18,13 @@ module.exports = function (grunt) {
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
-    dist: 'dist'
+    dist: 'dist',
+    data: './datasets/example'
   };
+
+  if (grunt.file.exists('config.json')) {
+    grunt.util._.extend(appConfig, grunt.file.readJSON('config.json'));
+  }
 
   // Define the configuration for all the tasks
   grunt.initConfig({
@@ -82,7 +87,11 @@ module.exports = function (grunt) {
                 '/bower_components',
                 connect.static('./bower_components')
               ),
-              connect.static(appConfig.app)
+              connect.static(appConfig.app),
+              connect().use(
+                '/data',
+                connect.static(appConfig.data)
+              )
             ];
           }
         }
@@ -98,7 +107,11 @@ module.exports = function (grunt) {
                 '/bower_components',
                 connect.static('./bower_components')
               ),
-              connect.static(appConfig.app)
+              connect.static(appConfig.app),
+              connect().use(
+                '/data',
+                connect.static(appConfig.data)
+              )
             ];
           }
         }
