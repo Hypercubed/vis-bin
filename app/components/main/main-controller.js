@@ -145,6 +145,50 @@ angular.module('myApp')
 
 })
 
+.directive('getSvgs', function() {  // Improve this, move to downloader?
+
+  return {
+    scope: {
+      getSvgs: '='
+    },
+    link: function (scope, element) {
+
+
+      var watch = function() {
+        return element.html();
+      };
+
+      scope.$watch(watch, function() {
+
+        var svgs = element.find('svg'),
+          ids = [];
+
+        if (svgs.length > 0) {
+
+          svgs.each(function(d) {
+
+            var elm = $(this);
+
+            var o = {};
+
+            o.id = elm.attr('id') || 'svg-'+d;
+            o.title = elm.attr('title') || o.id;
+
+            elm.attr(o);
+
+            ids.push(o);
+          });
+
+        }
+
+        scope.getSvgs = ids;
+
+      });
+    }
+  };
+
+})
+
 .directive('hasSvg', function() {  // Improve this, move to downloader?
 
     return {
