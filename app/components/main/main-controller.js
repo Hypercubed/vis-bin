@@ -116,26 +116,50 @@ angular.module('myApp')
       });
     };
 
+    main.getSVGs = function(id) {
+      var svgs = angular.element(id).find('svg'),
+      ids = [];
+
+      if (svgs.length > 0) {
+
+        svgs.each(function(d) {
+
+          var elm = $(this);
+
+          var o = {};
+
+          o.id = elm.attr('id') || 'svg-'+d;
+          o.title = elm.attr('title') || o.id;
+
+          elm.attr(o);
+
+          ids.push(o);
+        });
+
+      }
+
+      return ids;
+    };
+
     main.refresh = function refresh() {
       $log.debug('main.refresh');
 
       DataService.reparse();
 
-      //var view = DataService.files[main.viewKey].text;
-
       main.view = '';
-
-      console.log(main.viewKey);
 
       $timeout(function() {
         main.view = DataService.files[main.viewKey].text;
+
+        $timeout(function() {
+          main.svgs = main.getSVGs('#result');
+        });
+
+        $timeout(function() {
+          main.svgs = main.getSVGs('#result');
+        }, 2000);
+
       });
-
-
-      //var r = String(nextUid());
-      //var path = '/$dynamichtml/view'+r+'.html';
-      //$templateCache.put(path, view);  // maybe  not the best way
-      //main.viewPath = path;
 
       main.showResult = true;
 
@@ -152,7 +176,6 @@ angular.module('myApp')
       getSvgs: '='
     },
     link: function (scope, element) {
-
 
       var watch = function() {
         return element.html();

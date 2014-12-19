@@ -10,20 +10,27 @@
 
   <div class="pull-right">
 
-    <button class="btn btn-primary" ng-click="main.refresh()">
+
+
+    <button class="btn btn-primary btn-sm" ng-click="main.refresh()">
       <i class="glyphicon glyphicon-play"></i> Refresh result
     </button>
 
-    <button class="btn btn-primary" svg-download="#{{main.hasSvg}}" title="mysvg" ng-show="main.hasSvg">
-      Download svg
-    </button>
+    <div class="btn-group" ng-show="main.svgs.length">
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        Download SVG <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href svg-download="#{{svg.id}}" title="{{svg.title}}" ng-repeat="svg in main.svgs">{{svg.title}}</a></li>
+      </ul>
+    </div>
 
   </div>
 
 
-  <tabset>
-    <tab id="result" heading="Result" select="main.refreshTabs()" active="main.showResult">
-      <div class="col-xs-12" ng-bind-html-template="main.view" has-svg="main.hasSvg">
+  <tabset class="tabs-main">
+    <tab heading="Result" select="main.refreshTabs()" active="main.showResult">
+      <div id="result" class="col-xs-12" ng-bind-html-template="main.view">
       </div>
     </tab>
     <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in files" ng-if="file.show !== false">

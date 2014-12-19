@@ -81,6 +81,28 @@ line-height: 1;
   margin: 10px 0;
 }
 
+.tabs-main .nav-tabs > li > a {
+  padding: 8px 15px;
+}
+
+.tabs-main .nav-tabs > li.active {
+  border-bottom: 4px solid white;
+  box-sizing: border-box;
+}
+
+.report-tabs .btn-group {
+  box-shadow: none;
+  margin: 2px 1px;
+}
+
+.report-tabs .btn-group:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19);
+}
+
+.report-tabs .btn {
+  margin: 2px 1px 0 0;
+}
+
 .editable-click, a.editable-click {
   text-decoration: none;
   color: inherit;
