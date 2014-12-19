@@ -22,7 +22,7 @@ module.exports = function (grunt) {
     data: './datasets/example'
   };
 
-  if (grunt.file.exists('config.json')) {
+  if (grunt.file.exists('./config.json')) {
     grunt.util._.extend(appConfig, grunt.file.readJSON('config.json'));
   }
 

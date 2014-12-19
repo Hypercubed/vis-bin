@@ -1,16 +1,25 @@
 
-<div class="report-header form-group-lg">
-  <h3><a href="#" editable-text="main.name">{{ main.name || 'name' }}</a></h3>
-  <p class="lead">
-    <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a>
-  </p>
+<div class="report-header form-group-lg list-group">
+  <div class="list-group-item">
+
+    <div class="row-action-primary">
+      <i class="mdi-editor-insert-chart"></i>
+    </div>
+
+    <div class="row-content">
+      <h3 class="list-group-item-heading"><a href="#" editable-text="main.name">{{ main.name || 'name' }}</a></h3>
+      <p class="lead">
+        <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a>
+      </p>
+    </div>
+
+  </div>
+
 </div>
 
 <div class="row container-fluid report-tabs">
 
   <div class="pull-right">
-
-
 
     <button class="btn btn-primary btn-sm" ng-click="main.refresh()">
       <i class="glyphicon glyphicon-play"></i> Refresh result
@@ -26,7 +35,6 @@
     </div>
 
   </div>
-
 
   <tabset class="tabs-main">
     <tab heading="Result" select="main.refreshTabs()" active="main.showResult">
