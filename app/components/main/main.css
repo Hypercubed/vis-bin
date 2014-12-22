@@ -95,8 +95,8 @@ line-height: 1;
   margin: 2px 1px;
 }
 
-.report-tabs .btn-group:hover {
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19);
+.report-tabs .btn-group .btn:hover, .report-tabs .btn-group.open .btn {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19) !important;
 }
 
 .report-tabs .btn {
@@ -119,4 +119,9 @@ line-height: 1;
 .report-tabs textarea.editable-input.editable-has-buttons,
 .report-tabs .CodeMirror {
   min-height: 800px;
+}
+
+#result.dirty {
+  border: 1px solid red;
+  opacity: 0.6;
 }

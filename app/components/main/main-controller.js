@@ -31,7 +31,7 @@ angular.module('myApp')
       $log.debug('Loading ',file.name, file);
 
       var transform = function(data) {
-        file.text = data;
+        file.content = data;
         process(file);
         return file;
       };
@@ -45,10 +45,10 @@ angular.module('myApp')
     function process(file) {
       var ext = file.name.split('.').pop();
       if (['tsv'].indexOf(ext) > -1) {
-        var parse = Papa.parse(file.text, {header: true, delimiter: '\t', skipEmptyLines: true});
+        var parse = Papa.parse(file.content, {header: true, delimiter: '\t', skipEmptyLines: true});
         angular.extend(file, parse);
       } else if (ext === 'json') {
-        file.data = angular.fromJson(file.text);
+        file.data = angular.fromJson(file.content);
       }
     }
 
@@ -88,22 +88,12 @@ angular.module('myApp')
     };
 
   })
-  .controller('MainCtrl', function ($scope, $log, $timeout, $templateCache, $window, $routeParams, DataService) {
+  .controller('MainCtrl', function ($scope, $log, $timeout, $routeParams, DataService) {
 
     var main = this;
 
     angular.extend(main, DataService.files[$routeParams.id+'/index.json'].data);
-
-    main.files = $scope.files = $window.files = DataService.files;
-
-    main.viewPath = '';
-
-    angular.forEach(main.files, function(file) { /// TEMP
-      if (file.name.indexOf('.html') > -1 && !main.viewKey) {
-        main.viewKey = file.name;
-        main.view = file.text;
-      }
-    });
+    main.files = DataService.files;
 
     main.uid = 0;
     function nextUid() {
@@ -116,56 +106,24 @@ angular.module('myApp')
       });
     };
 
-    main.getSVGs = function(id) {
-      var svgs = angular.element(id).find('svg'),
-      ids = [];
-
-      if (svgs.length > 0) {
-
-        svgs.each(function(d) {
-
-          var elm = $(this);
-
-          var o = {};
-
-          o.id = elm.attr('id') || 'svg-'+d;
-          o.title = elm.attr('title') || o.id;
-
-          elm.attr(o);
-
-          ids.push(o);
-        });
-
-      }
-
-      return ids;
-    };
-
     main.refresh = function refresh() {
       $log.debug('main.refresh');
 
       DataService.reparse();
 
-      main.view = '';
-
-      $timeout(function() {
-        main.view = DataService.files[main.viewKey].text;
-
-        $timeout(function() {
-          main.svgs = main.getSVGs('#result');
-        });
-
-        $timeout(function() {
-          main.svgs = main.getSVGs('#result');
-        }, 2000);
-
-      });
-
+      main.ruid = main.uid;
       main.showResult = true;
+      main.isDirty = false;
 
     };
 
+    main.makeDirty = function() {
+      main.isDirty = true;
+    };
+
     main.refresh();
+
+    main.isDirty = false;
 
 })
 
@@ -175,16 +133,12 @@ angular.module('myApp')
     scope: {
       getSvgs: '='
     },
-    link: function (scope, element) {
+    link: function (scope, element, attr) {
 
-      var watch = function() {
-        return element.html();
-      };
-
-      scope.$watch(watch, function() {
+      function getSVGs() {
 
         var svgs = element.find('svg'),
-          ids = [];
+        ids = [];
 
         if (svgs.length > 0) {
 
@@ -206,68 +160,57 @@ angular.module('myApp')
 
         scope.getSvgs = ids;
 
-      });
-    }
-  };
-
-})
-
-.directive('hasSvg', function() {  // Improve this, move to downloader?
-
-    return {
-      scope: {
-        hasSvg: '='
-      },
-      link: function (scope, element) {
-
-
-        var watch = function() {
-          return element.html();
-        };
-
-        scope.$watch(watch, function() {
-
-          var svg = element.find('svg');
-
-          scope.hasSvg = (svg.length > 0) ? svg.parent()[0].id : false;
-
-        });
       }
-    };
 
-})
-
-.directive('ngBindHtmlTemplate', function($parse, $compile) {
-  return {
-    compile: function compile(tElement, tAttrs) {
-      var getter = $parse(tAttrs.ngBindHtmlTemplate);
-      var watch = $parse(tAttrs.ngBindHtmlTemplate, function getStringValue(value) {
-        return (value || '').toString();
-      });
-      return function (scope, element) {
-        scope.$watch(watch, function() {
-
-          element.html(getter(scope));
-          $compile(element.contents())(scope);
-
-        });
+      var watch = attr.refresh || function() {
+        return element.html();
       };
+
+      scope.$watch(watch, getSVGs);
+
     }
   };
+
 })
 
-.directive('editableCode', ['editableDirectiveFactory',
-  function(editableDirectiveFactory) {
-    return editableDirectiveFactory({
-      directiveName: 'editableCode',
-      inputTpl: '<textarea ui-codemirror="{ lineNumbers : true }"></textarea>',
-      autosubmit: function() {
-        var self = this;
-        self.inputEl.bind('change', function() {
-          self.scope.$apply(function() {
-            self.scope.$form.$submit();
-          });
+.directive('reportInclude', function($window, $compile, $timeout, $log) {
+  return {
+    restrict: 'AE',
+    link: function(scope, element, attr) {
+      var reportContainer;
+
+      var files = scope.$eval(attr.files) || {};
+
+      var reportScope = scope.$new();
+      $window.files = reportScope.files = files;
+
+      function handleFiles() {
+
+        $log.debug('Generating report');
+
+        element.html('');
+
+        reportContainer = angular.element('<div class="report-content">');
+
+        angular.forEach(files, function(file) { // TODO: handle, CSS, JS files
+          if (file.name.indexOf('index.html') > 0) {
+
+            //reportScope.$evalAsync(function() {  // Do this last
+              element.append(reportContainer);
+              reportContainer.html(file.content);
+              $compile(reportContainer.contents())(reportScope);
+            //});
+
+          }
         });
+
+        $log.debug('Generating report - done');
+
       }
-    });
-}]);
+
+      //$timeout(handleFiles);
+      scope.$watch(attr.refresh, handleFiles);
+
+    }
+  };
+});

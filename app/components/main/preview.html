@@ -10,8 +10,8 @@
 
   <div class="pull-right">
 
-    <div class="btn-group" ng-show="main.svgs.length">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="main.svgs.length === 0">
         Download SVG <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
@@ -21,7 +21,7 @@
 
   </div>
 
-  <div id="result" class="col-xs-12" ng-bind-html-template="main.view" get-svgs="main.svgs">
+  <div id="result" class="col-xs-12" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
   </div>
 
 </div>

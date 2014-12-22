@@ -21,12 +21,12 @@
 
   <div class="pull-right">
 
-    <button class="btn btn-primary btn-sm" ng-click="main.refresh()">
-      <i class="glyphicon glyphicon-play"></i> Refresh result
+    <button class="btn btn-primary btn-sm" ng-click="main.refresh()" ng-disabled="!main.isDirty">
+      <i class="glyphicon glyphicon-play" ></i> Refresh result
     </button>
 
-    <div class="btn-group" ng-show="main.svgs.length">
-      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="main.svgs.length === 0">
         Download SVG <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
@@ -37,14 +37,15 @@
   </div>
 
   <tabset class="tabs-main">
-    <tab heading="Result" select="main.refreshTabs()" active="main.showResult">
-      <div id="result" class="col-xs-12" ng-bind-html-template="main.view">
+    <tab heading="Result" select="main.refreshTabs()" active="main.showResult" >
+      <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
       </div>
     </tab>
-    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in files" ng-if="file.show !== false">
+    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
       <div class="col-xs-12">
         <div class="code-mirror"
-        ng-model="file.text"
+        ng-model="file.content"
+        ng-change="main.makeDirty()"
         ui-refresh="main.uid"
         ui-codemirror="{
           lineNumbers: true,
