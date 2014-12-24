@@ -16,6 +16,7 @@ angular
     'ngTouch',
     'ui.bootstrap',
     'ui.codemirror',
+    'ui.grid', 'ui.grid.autoResize',
     'xeditable',
     'hc.downloader'
   ])

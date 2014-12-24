@@ -94,8 +94,12 @@ angular.module('myApp')
       }
     }
 
-    function reparse() {
-      angular.forEach(files, process);
+    function reparse(file) {
+      if (arguments.length < 1) {
+        angular.forEach(files, process);
+      } else {
+        process(file);
+      }
     }
 
     function load(id) {
@@ -154,15 +158,21 @@ angular.module('myApp')
     angular.extend(main, DataService.files[$routeParams.id+'/index.json'].data);
     main.files = DataService.files;
 
-    main.uid = 0;
-    function nextUid() {
-      return ++main.uid;
-    }
+    main.ruid = 0;
 
-    main.refreshTabs =  function() {
-      $timeout(function() {
-        nextUid();
-      });
+    main.refreshTabs =  function(file) {  // hack
+      if (!file.drawn) {
+        $timeout(function() {
+          file.drawn = true;
+        });
+      }
+    };
+
+    main.reparse = function refresh() {
+      $log.debug('main.reparse');
+
+      DataService.reparse();
+      main.isDirty = true;
     };
 
     main.refresh = function refresh() {
@@ -170,15 +180,19 @@ angular.module('myApp')
 
       DataService.reparse();
 
-      main.ruid = main.uid;
+      ++main.ruid;
       main.showResult = true;
       main.isDirty = false;
 
     };
 
-    main.makeDirty = function() {
-      main.isDirty = true;
-    };
+    main.codemirrorLoaded = function(cm) {
+
+      $timeout(function() {
+        cm.refresh();
+      }, 100);
+
+    }
 
     main.refresh();
 
@@ -230,6 +244,10 @@ angular.module('myApp')
     }
   };
 
+})
+
+.controller('FileCtrl', function($scope) {  // TODO: make directive
+  var vm = this;
 })
 
 .directive('reportInclude', function($window, $compile, $timeout, $log, $routeParams) {

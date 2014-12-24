@@ -7,9 +7,9 @@
     </div>
 
     <div class="row-content">
-      <h3 class="list-group-item-heading"><a href="#" editable-text="main.name">{{ main.name || 'name' }}</a></h3>
+      <h3 class="list-group-item-heading">{{ main.name || 'name' }}</h3>
       <p class="lead">
-        <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a>
+        {{ main.description || 'description' }}
       </p>
     </div>
 
@@ -21,7 +21,9 @@
 
   <div class="pull-right">
 
-    <button class="btn btn-primary btn-sm" ng-click="main.refresh()" ng-disabled="!main.isDirty">
+    <button class="btn btn-primary btn-sm"
+        ng-click="main.refresh()"
+        ng-disabled="!main.isDirty">
       <i class="glyphicon glyphicon-play" ></i> Refresh result
     </button>
 
@@ -37,22 +39,55 @@
   </div>
 
   <tabset class="tabs-main">
-    <tab heading="Result" select="main.refreshTabs()" active="main.showResult" >
+    <tab heading="Result" active="main.showResult" >
       <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
       </div>
     </tab>
-    <tab heading="{{name}}" select="main.refreshTabs()" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
-      <div class="col-xs-12">
-        <div class="code-mirror"
-        ng-model="file.content"
-        ng-change="main.makeDirty()"
-        ui-refresh="main.uid"
-        ui-codemirror="{
-          lineNumbers: true,
-          lineWrapping : true,
-          mode: file.type
-        }"></div>
+    <tab heading="{{name}}" active="file.active" select="main.refreshTabs(file)" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
+      <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.ext === 'tsv']">
+
+        <div class="btn-toolbar" ng-if="file.ext === 'tsv'">
+          <div class="btn-group btn-group-sm pull-right">
+            <button type="button" class="btn btn-primary btn-sm"
+                tooltip="Table"
+                ng-click="fileCtrl.mode = 'grid'"
+                ng-class="fileCtrl.mode === 'grid' ? 'disabled' : ''">
+              <i class="mdi-image-grid-on"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm"
+                tooltip="Text"
+                ng-click="fileCtrl.mode = 'code'"
+                ng-class="fileCtrl.mode === 'code' ? 'disabled' : ''">
+              <i class="glyphicon glyphicon-align-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="col-xs-12">
+
+          <div class="grid" ng-show="fileCtrl.mode === 'grid'"
+            ui-grid="{ data: file.data }"
+            ui-grid-auto-resize></div>
+
+          <div class="code-mirror" ng-if="fileCtrl.mode === 'code' && file.active"
+            ng-model="file.content"
+            ng-change="main.reparse(file)"
+            ui-codemirror="{
+              lineNumbers: true,
+              lineWrapping : true,
+              mode: file.type,
+              onLoad : main.codemirrorLoaded
+            }"></div>
+
+            <div ng-repeat="error in file.errors" class="alert alert-danger">
+              {{error.message}} <span ng-if="error.row">, check row {{error.row+2}}</span>
+            </div>
+
+        </div>
+
       </div>
+
+
     </tab>
   </tabset>
 
