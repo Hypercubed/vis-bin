@@ -3,9 +3,12 @@
 	"description": "Index of Visualizations",
 	"files": [
 		"index.html",
-		{ "name": "bars/index.json", "show": false },
-		{ "name": "barsII/index.json", "show": false },
-		{ "name": "hexbin/index.json", "show": false },
-		{ "name": "trains/index.json", "show": false }
+		"index.css",
+		{ "url": "data/bars/index.json", "show": false },
+		{ "url": "data/barsII/index.json", "show": false },
+		{ "url": "data/barsIII/index.json", "show": false },
+		{ "url": "data/bars-gist/index.json", "show": false },
+		{ "url": "data/hexbin/index.json", "show": false },
+		{ "url": "data/trains/index.json", "show": false }
 	]
 }
