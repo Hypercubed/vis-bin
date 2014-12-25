@@ -7,7 +7,7 @@
 		{ "url": "data/bars/index.json", "show": false },
 		{ "url": "data/barsII/index.json", "show": false },
 		{ "url": "data/barsIII/index.json", "show": false },
-		{ "url": "data/bars-gist/index.json", "show": false },
+		{ "url": "https://api.github.com/gists/3885705", "show": false },
 		{ "url": "data/hexbin/index.json", "show": false },
 		{ "url": "data/trains/index.json", "show": false }
 	]

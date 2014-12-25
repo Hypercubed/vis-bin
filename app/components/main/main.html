@@ -46,7 +46,7 @@
     <tab heading="{{name}}" active="file.active" select="main.refreshTabs(file)" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
       <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.ext === 'tsv']">
 
-        <div class="btn-toolbar" ng-if="file.ext === 'tsv'">
+        <div class="btn-toolbar" ng-if="file.table">
           <div class="btn-group btn-group-sm pull-right">
             <button type="button" class="btn btn-primary btn-sm"
                 tooltip="Table"

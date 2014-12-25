@@ -20,8 +20,6 @@
 	(function() {
 		'use strict';
 
-		console.log('HexBin start');
-
 		var width = 960,
 			height = 500,
 			i = -1,
@@ -42,7 +40,7 @@
 			.domain([0, 20])
 			.range(['white', 'steelblue'])
 			.interpolate(d3.interpolateLab);
-			
+
 		jQuery.getScript('http://d3js.org/d3.hexbin.v0.min.js', function() {
 
 			var hexbin = d3.hexbin()
