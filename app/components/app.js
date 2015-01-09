@@ -16,25 +16,29 @@ angular
     'ngTouch',
     'ui.bootstrap',
     'ui.codemirror',
-    'ui.grid', 'ui.grid.autoResize',
+    'ui.grid',
+    'ui.grid.autoResize',
     'xeditable',
     'hc.downloader',
     'hc.marked'
   ])
+  .config(function($logProvider){
+    $logProvider.debugEnabled(false);
+  })
   .config(function ($routeProvider) {
 
     var resolve = {
-      dataService: function($route, DataServiceFactory) {
+      dataService: ['$route', 'DataServiceFactory', function($route, DataServiceFactory) {
         var id = $route.current.params.id || 'index';
         var conn = $route.current.params.conn || 'data';
 
         var DS = new DataServiceFactory(conn, id);
         return DS.load(conn, id);
-      }
+      }]
     };
 
     $routeProvider
-      .when('/preview/:id/', {
+      .when('/view/:id/', {
         templateUrl: 'components/main/preview.html',
         controller: 'MainCtrl as main',
         resolve: resolve
@@ -50,9 +54,12 @@ angular
         resolve: resolve
       })
       .otherwise({
-        redirectTo: '/index'
+        redirectTo: '/view/index'
       });
 
+  })
+  .config(function($tooltipProvider) {
+    $tooltipProvider.options({ popupDelay: 0, animation: false })
   })
   .run(function(editableOptions) {
     editableOptions.theme = 'bs3';

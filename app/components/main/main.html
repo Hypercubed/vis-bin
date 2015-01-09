@@ -1,8 +1,7 @@
-
 <div class="report-header form-group-lg list-group">
   <div class="list-group-item">
 
-    <div class="row-action-primary">
+    <div class="row-action-primary" ng-if="!main.isPrintView">
       <i class="mdi-editor-insert-chart"></i>
     </div>
 
@@ -19,32 +18,47 @@
 
 <div class="row container-fluid report-tabs">
 
-  <div class="pull-right">
+  <div class="pull-right" ng-show="!main.isPrintView">
 
-    <button class="btn btn-primary btn-sm"
+    <button class="btn btn-primary btn-sm" tooltip="Refresh result"
         ng-click="main.refresh()"
         ng-disabled="!main.isDirty">
-      <i class="glyphicon glyphicon-play" ></i> Refresh result
+        <i class="mdi-navigation-refresh"></i>
     </button>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="main.svgs.length === 0">
-        Download SVG <span class="caret"></span>
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Download SVG"
+        data-toggle="dropdown" aria-expanded="false"
+        ng-disabled="main.svgs.length === 0">
+        <i class="mdi-image-collections"></i> <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
         <li><a href svg-download="#{{svg.id}}" title="{{svg.title}}" ng-repeat="svg in main.svgs">{{svg.title}}</a></li>
       </ul>
     </div>
 
+    <button ng-click="main.togglePreview()" type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Print">
+      <i class="mdi-action-print"></i>
+    </button>
+
   </div>
 
-  <tabset class="tabs-main">
+  <div id="print-preview" ng-if="main.isPrintView" >
+    <button ng-click="main.togglePreview()" type="button" class="pull-right btn btn-primary btn-sm print-float" tooltip="Print">
+      <i class="mdi-action-print"></i>
+    </button>
+
+    <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" data="main.data" refresh="main.ruid" get-svgs="main.svgs">
+    </div>
+  </div>
+
+  <tabset class="tabs-main" ng-if="!main.isPrintView" >
     <tab heading="Result" active="main.showResult" >
-      <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
+      <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" data="main.data" refresh="main.ruid" get-svgs="main.svgs">
       </div>
     </tab>
     <tab heading="{{name}}" active="file.active" select="main.refreshTabs(file)" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
-      <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.ext === 'tsv']">
+      <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.type === 'text/tab-separated-values']">
 
         <div class="btn-toolbar" ng-if="file.table">
           <div class="btn-group btn-group-sm pull-right">

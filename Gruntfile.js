@@ -19,11 +19,16 @@ module.exports = function (grunt) {
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
     dist: 'dist',
+    title: 'vis-bin',
+    ga: 'UA-XXXXX-X',
     data: './datasets/example'
   };
 
-  if (grunt.file.exists('./config.json')) {
-    grunt.util._.extend(appConfig, grunt.file.readJSON('config.json'));
+  var env = process.env.ENV || 'development';
+  var configFile = './' + env + '_config.json';
+
+  if (grunt.file.exists(configFile)) {
+    grunt.util._.extend(appConfig, grunt.file.readJSON(configFile));
   }
 
   // Define the configuration for all the tasks
@@ -32,11 +37,39 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: appConfig,
 
+    template: {
+      options: {
+        data: appConfig
+      },
+      server: {
+        files: {
+          './.tmp/components/config.js': ['<%= yeoman.app %>/components/config.js.tpl'],
+          './.tmp/index.html': ['<%= yeoman.app %>/index.html.tpl'],
+        }
+      },
+      dist: {
+        files: {
+          './.tmp/components/config.js': ['<%= yeoman.app %>/components/config.js.tpl'],
+          '<%= yeoman.dist %>/index.html': ['<%= yeoman.app %>/index.html.tpl'],
+        }
+      }
+    },
+
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       bower: {
         files: ['bower.json'],
         tasks: ['wiredep']
+      },
+      tpl: {
+        files: [
+          '<%= yeoman.app %>/index.html.tpl',
+          '<%= yeoman.app %>/components/config.js.tpl'
+        ],
+        tasks: ['template:server'],
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        }
       },
       js: {
         files: ['<%= yeoman.app %>/components/{,*/}*.js'],
@@ -178,7 +211,7 @@ module.exports = function (grunt) {
     // Automatically inject Bower components into the app
     wiredep: {
       app: {
-        src: ['<%= yeoman.app %>/index.html'],
+        src: ['<%= yeoman.app %>/index.html.tpl'],
         ignorePath:  /\.\.\//
       }
     },
@@ -199,7 +232,7 @@ module.exports = function (grunt) {
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
     useminPrepare: {
-      html: '<%= yeoman.app %>/index.html',
+      html: '<%= yeoman.app %>/index.html.tpl',
       options: {
         dest: '<%= yeoman.dist %>',
         flow: {
@@ -337,7 +370,23 @@ module.exports = function (grunt) {
           cwd: 'bower_components/bootstrap/dist',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
-        }]
+        }, {
+          expand: true,
+          cwd: 'bower_components/bootstrap-material-design/dist',
+          src: 'fonts/*',
+          dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'bower_components/angular-ui-grid',
+          src: '{*.woff,*.ttf}',
+          dest: '<%= yeoman.dist %>/components'
+        }, {
+          expand: true,
+          cwd: appConfig.data,
+          src: '**/*',
+          dest: '<%= yeoman.dist %>/data'
+        }
+        ]
       },
       styles: {
         expand: true,
@@ -388,16 +437,12 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'wiredep',
+      'template:server',
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
       'watch'
     ]);
-  });
-
-  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run(['serve:' + target]);
   });
 
   grunt.registerTask('test', [
@@ -411,6 +456,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
+    'template:dist',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',

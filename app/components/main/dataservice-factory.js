@@ -199,11 +199,34 @@ angular.module('myApp')
 })
 .factory('DataServiceFactory', function($http, $q, $log, mimeType) {
 
+	function cheapYaml(content) {
+		var split = content.split('\n\n', 2);
+
+		var meta = { content: split[1] };
+		split[0].split(/[\r\n]+/).forEach(function(d) {
+			var i = d.indexOf(':');
+			if (i > -1) {
+				var key = d.substring(0, i).trim();
+				var value = d.substring(i+1).trim();
+				meta[key] = value;
+			}
+		});
+		return meta;
+	}
+
+	function DOS2UNIX(content) {
+		return content
+			.replace(/\r/g,'\n');
+	}
+
 	function processByType(file) {
 		if (file.type === 'text/tab-separated-values') {  // TODO: more file types
 			var parse = Papa.parse(file.content, {header: true, delimiter: '\t', skipEmptyLines: true});
 			angular.extend(file, parse);
 			file.table = true;
+		} else if (file.type === 'text/plain') {
+			file.content = DOS2UNIX(file.content);
+			file.data = cheapYaml(file.content);
 		} else if (file.type === 'application/json') {
 			file.data = angular.fromJson(file.content);
 			if (file.data.url && file.data.url.indexOf('api.github.com') > -1) {  // move

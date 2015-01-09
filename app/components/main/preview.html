@@ -8,19 +8,6 @@
 
 <div class="row container-fluid report-tabs">
 
-  <div class="pull-right">
-
-    <div class="btn-group">
-      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="main.svgs.length === 0">
-        Download SVG <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a href svg-download="#{{svg.id}}" title="{{svg.title}}" ng-repeat="svg in main.svgs">{{svg.title}}</a></li>
-      </ul>
-    </div>
-
-  </div>
-
   <div id="result" class="col-xs-12" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
   </div>
 

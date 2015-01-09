@@ -7,10 +7,12 @@ angular.module('myApp')
 		link: function(scope, element, attr) {
 			var reportContainer;
 
+			var data = scope.$eval(attr.data) || {};
 			var files = scope.$eval(attr.files) || {};
 
 			var reportScope = scope.$new();
-			$window.files = reportScope.files = files;
+			$window.files = reportScope.files = files;  // rename these?
+			$window.data = reportScope.data = data;
 
 			var d3 = $window.d3;
 
@@ -22,6 +24,7 @@ angular.module('myApp')
 				}
 				return d3Tsv.apply(this, arguments);
 			};
+			angular.extend(d3.tsv, d3Tsv);
 
 			var d3Select = d3.select;
 			d3.select = function() {
@@ -30,7 +33,6 @@ angular.module('myApp')
 				}
 				return d3Select.apply(this, arguments);
 			};
-
 
 			function handleFiles() {
 

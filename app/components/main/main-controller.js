@@ -10,12 +10,20 @@
  * Controller of the myApp
  */
 angular.module('myApp')
-  .controller('MainCtrl', function ($scope, $log, $timeout, dataService) {
+  .controller('MainCtrl', function ($scope, $location, $log, $timeout, dataService) {
 
     var main = this;
 
-    angular.extend(main, dataService.files[dataService.id].data);
+    main.isPrintView = false;
+
+    angular.extend(main, dataService.files[dataService.id].data);  // todo: use main.data instead?
     main.files = dataService.files;
+    main.data = angular.extend({}, dataService.files[dataService.id].data);
+
+    var hash = $location.hash();
+    if (hash && main.files[hash]) {
+      main.files[hash].active = true;
+    }
 
     main.ruid = 0;
 
@@ -43,6 +51,13 @@ angular.module('myApp')
       main.showResult = true;
       main.isDirty = false;
 
+    };
+
+    main.togglePreview = function() {
+      main.isPrintView = !main.isPrintView;
+      $timeout(function() {
+        main.refresh();
+      });
     };
 
     main.codemirrorLoaded = function(cm) {

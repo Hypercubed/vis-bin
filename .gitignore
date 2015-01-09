@@ -5,4 +5,4 @@ dist
 bower_components
 datasets/*
 !datasets/example/
-config.json
+*config.json

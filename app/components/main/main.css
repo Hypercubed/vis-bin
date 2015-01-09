@@ -100,6 +100,14 @@ line-height: 1;
   margin: 2px 1px;
 }
 
+.report-tabs .btn {
+  padding: 5px 10px;
+}
+
+button[disabled] + .tooltip {
+  display: none !important;
+}
+
 .report-tabs .btn-group .btn:hover, .report-tabs .btn-group.open .btn {
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19) !important;
 }
@@ -135,4 +143,15 @@ line-height: 1;
 #result.dirty {
   border: 1px solid red;
   opacity: 0.6;
+}
+
+#print-preview {
+  position: relative;
+}
+
+.print-float {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  z-index: 1000;
 }
