@@ -80,7 +80,7 @@ svg {
   .attr("width", width)
   .attr("height", height + margin.top + margin.bottom);
 
-  var trains = files["trains/schedule.tsv"].data.map(type);
+  var trains = $package.resources[1].data.map(type);
 
     y.domain(d3.extent(stations, function(d) { return d.distance; }));
 

@@ -1,8 +1,0 @@
-{
-	"name": "Bars",
-	"description": "A simple SVG bar chart. Part of the tutorial series Let’s Make a Bar Chart.",
-	"files": [
-		"index.html",
-		"bars.tsv"
-	]
-}

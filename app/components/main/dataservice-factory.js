@@ -197,7 +197,9 @@ angular.module('myApp')
 	};
 
 })
-.factory('DataServiceFactory', function($http, $q, $log, mimeType) {
+.factory('DataServiceFactory', function($http, $q, $log, mimeType) { //todo: make a service, returns a dataPackage?
+
+	// try to follow http://dataprotocols.org/data-packages/
 
 	function cheapYaml(content) {
 		var split = content.split('\n\n', 2);
@@ -234,120 +236,126 @@ angular.module('myApp')
 				file.path = 'gists/'+file.data.id;
 			}
 		}
+		file.isDirty = false;
+		return file;
 	}
 
 	function DataService(conn, id) {
 		this.conn = conn || 'data';
 		this.id = id || 'index';
-		this.files = {};
+		//this.package = null;
 	}
 
-	DataService.prototype.clear = function clear() {
-		for (var key in this.files) {delete this.files[key];}
-		};
+	DataService.prototype.normalize = function(info) {
+		var base = this.conn + '/' + this.id;
 
-		DataService.prototype.loadFile = function loadFile(file) {
+		if (!angular.isObject(info)) {  // if not already an object, make one
+			info = { name: info, path: info, show: true };
+		}
 
-			if (!angular.isObject(file)) {  // move these to loadFile?
-				file = { url: file, show: true };
-			}
+		info.path = info.path || info.filename;
 
-			file.url = file.url || file.filename;
+		if (!info.url && info.path && base) {
+			info.url = base + '/' + info.path;
+		}
 
-			if (file.url.indexOf('/') < 0) {
-				file.url = [this.conn,this.id,file.url].join('/');
-			}
+		if (!info.name && info.url) {
+			info.name = info.url.split('/').pop();
+		}
 
-			var _path = file.url.split('/');
-			_path.shift();
-			//var _ext = _path[_path.length -1].split('.').pop();
+		if (!info.type && info.path) {
+			info.type = mimeType(info.path);
+		}
 
-			file = angular.extend({
-				name: _path.join('/'),
-				id: _path.join('/'),
-				path: _path[0],
-				filename: _path[1],
-				//ext: _ext,
-				type: mimeType(file.url),
-			}, file);
+		if (info.path.indexOf('api.github.com') > -1) {
+			info.type = mimeType('json');
+		}
 
-			if (file.url.indexOf('api.github.com') > -1) {
-				//file.ext = 'json';
-				file.type = mimeType('json');
-			}
+		if (info.type.indexOf('text') !== 0 && info.type !== 'application/javascript') {
+			info.show = false;
+		}
 
-			if (file.type.indexOf('image') === 0) {
-				file.show = false;
-			}
+		return info;
 
-			$log.debug('Loading ',file.url);
+	};
 
-			if (!file.content) {
+	DataService.prototype.loadResource = function(resource) {  // resource is a resource object form a data package
 
-				var transform = function(data, headers) {
-					var contentType = headers('Content-Type');
+		if (resource.url && !(resource.content || resource.data)) {
 
-					if (contentType) {
-						file.type = contentType.split(';')[0];
-					}
+			$log.debug('Loading ',resource.url);
 
-					file.content = data;
-					processByType(file);
-					return file;
-				};
+			var transform = function(data, headers) {
+				var contentType = headers('Content-Type');
 
-				return $http.get(file.url, {transformResponse: transform});
+				if (contentType) {
+					resource.type = contentType.split(';')[0];
+				}
 
-			} else {
-				processByType(file);
-				return {data: file};
-			}
+				resource.content = data;
+				return processByType(resource);
+			};
 
-		};
+			return $http.get(resource.url, {transformResponse: transform});
 
-		DataService.prototype.reparse = function reparse(file) {
-			if (arguments.length < 1) {
-				angular.forEach(this.files, processByType);
-			} else {
-				processByType(file);
-			}
-		};
+		} else {
+			return {data: processByType(resource)};
+		}
 
-		DataService.prototype.load = function() {
-			var id = this.id;
-			var conn = this.conn;
-			var self = this;
+	};
 
-			this.clear();
+	DataService.prototype.reparse = function reparse(file) {
+		if (arguments.length < 1) {
+			angular.forEach(this.package.resources, processByType);
+		} else {
+			processByType(file);
+		}
+	};
 
-			var path = (conn === 'gists') ?
+	DataService.prototype.load = function(conn, id) {
+
+		this.conn = conn = conn || this.conn || 'data';
+		this.id = id = id || this.id || 'index';
+
+		var self = this;
+
+		//this.clear();
+
+		var path = (conn === 'gists') ?
 			['https://api.github.com',conn,id] :
-			[conn,id,'index.json'];
+			['datapackage.json'];
 
-			var cfg = {id: id, url: path.join('/'), show: false};
+		var _package = this.normalize({ name: id, path: path.join('/'), show: false });
 
-			return this.loadFile(cfg)
-			.then(function(res) {
+		return this.loadResource(_package).then(function(res) {
 
-				self.files[id] = res.data;
+			angular.extend(_package, res.data.data);
 
-				var files = res.data.data.files || [[conn,id,'index.html'].join('/')];
-				var q = [];
-
-				angular.forEach(files, function(file) {
-					this.push(self.loadFile(file));
-				}, q);
-
-				return $q.all(q).then(function(res) {
-					res.forEach(function(r) {
-						self.files[r.data.id] = r.data;
-					});
-					return self;
+			if (conn === 'gists') {
+				_package.resources = [];
+				angular.forEach(_package.files, function(file) {
+					_package.resources.push(file);
 				});
+			}
 
+			_package.resources = _package.resources || ['index.html'];
+
+			var q = [];
+			for (var key in _package.resources) {
+				_package.resources[key] = self.normalize(_package.resources[key]);
+				q.push(self.loadResource(_package.resources[key]));
+			}
+
+			return $q.all(q).then(function(res) {
+				//self.package = _package;
+				//console.log(self);
+				return _package;
 			});
-		};
 
-		return DataService;
+		});
 
-	});
+	};
+
+	return DataService;
+
+});

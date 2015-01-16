@@ -1,10 +1,11 @@
 <div class="row index">
 
-	<div class="col-md-4" ng-repeat="(filename,file) in files" ng-if="file.data">
+	<div class="col-md-4" ng-repeat="(filename,file) in $package.resources" ng-if="file.data">
 
-		<a ng-href="#/{{file.path}}">
+		<a ng-href="{{file.link}}">
 			<div class="card">
-				<div style="background-image: url(data/{{file.path}}/thumbnail.png);">
+				&nbsp;
+				<div style="background-image: url({{file.data.image}});">
 					<h3>
 						{{file.data.name}}
 					</h3>

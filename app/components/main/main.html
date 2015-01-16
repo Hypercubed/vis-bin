@@ -1,14 +1,14 @@
 <div class="report-header form-group-lg list-group">
   <div class="list-group-item">
 
-    <div class="row-action-primary" ng-if="!main.isPrintView">
+    <div class="row-action-primary hidden-print" ng-if="!main.isPrintView">
       <i class="mdi-editor-insert-chart"></i>
     </div>
 
     <div class="row-content">
-      <h3 class="list-group-item-heading">{{ main.name || 'name' }}</h3>
+      <h3 class="list-group-item-heading">{{ main.dataPackage.name || 'name' }}</h3>
       <p class="lead">
-        {{ main.description || 'description' }}
+        {{ main.dataPackage.description || 'description' }}
       </p>
     </div>
 
@@ -16,17 +16,17 @@
 
 </div>
 
-<div class="row container-fluid report-tabs">
+<div class="row container-fluid report-tabs" ng-class="{ 'print-preview': main.isPrintView }">
 
-  <div class="pull-right" ng-show="!main.isPrintView">
+  <div class="pull-right">
 
-    <button class="btn btn-primary btn-sm" tooltip="Refresh result"
+    <button class="btn btn-primary btn-sm hidden-print" tooltip="Refresh result" ng-if="!main.isPrintView"
         ng-click="main.refresh()"
-        ng-disabled="!main.isDirty">
+        ng-disabled="!main.dataPackage.isDirty">
         <i class="mdi-navigation-refresh"></i>
     </button>
 
-    <div class="btn-group">
+    <div class="btn-group hidden-print" ng-if="!main.isPrintView">
       <button type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Download SVG"
         data-toggle="dropdown" aria-expanded="false"
         ng-disabled="main.svgs.length === 0">
@@ -37,27 +37,18 @@
       </ul>
     </div>
 
-    <button ng-click="main.togglePreview()" type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Print">
+    <button ng-click="main.togglePreview()" type="button" class="btn btn-primary btn-sm dropdown-toggle hidden-print" tooltip="Print preview">
       <i class="mdi-action-print"></i>
     </button>
 
-  </div>
-
-  <div id="print-preview" ng-if="main.isPrintView" >
-    <button ng-click="main.togglePreview()" type="button" class="pull-right btn btn-primary btn-sm print-float" tooltip="Print">
-      <i class="mdi-action-print"></i>
-    </button>
-
-    <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" data="main.data" refresh="main.ruid" get-svgs="main.svgs">
-    </div>
   </div>
 
   <tabset class="tabs-main" ng-if="!main.isPrintView" >
     <tab heading="Result" active="main.showResult" >
-      <div id="result" class="col-xs-12" ng-class="{ dirty: main.isDirty }" report-include files="main.files" data="main.data" refresh="main.ruid" get-svgs="main.svgs">
-      </div>
     </tab>
-    <tab heading="{{name}}" active="file.active" select="main.refreshTabs(file)" ng-repeat="(name, file) in main.files" ng-if="file.show !== false">
+    <tab heading="{{file.name}}" ng-repeat="file in main.dataPackage.resources"
+        ng-if="file.show !== false"
+        active="file.active" select="main.refreshTabs(file)" >
       <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.type === 'text/tab-separated-values']">
 
         <div class="btn-toolbar" ng-if="file.table">
@@ -85,10 +76,10 @@
 
           <div class="code-mirror" ng-if="fileCtrl.mode === 'code' && file.active"
             ng-model="file.content"
-            ng-change="main.reparse(file)"
+            ng-change="main.fileChanged(file)"
             ui-codemirror="{
               lineNumbers: true,
-              lineWrapping : true,
+              lineWrapping : false,
               mode: file.type,
               onLoad : main.codemirrorLoaded
             }"></div>
@@ -104,5 +95,13 @@
 
     </tab>
   </tabset>
+
+  <div id="result" class="col-xs-12"
+    ng-show="main.showResult || main.isPrintView"
+    xxxng-class="{ dirty: main.isDirty }"
+    get-svgs="main.svgs">
+    <div report-include data="main.dataPackage" refresh-on="report:refresh" print-view="main.isPrintView">
+    </div>
+  </div>
 
 </div>

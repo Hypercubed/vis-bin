@@ -1,8 +1,0 @@
-{
-	"name": "Sortable Bar Chart",
-	"description": "This variation of a simple bar chart adds sorting with staggered delay and translucency to improve readability during the transition. ",
-	"files": [
-		"index.html",
-		"data/bars/bars.tsv"
-	]
-}

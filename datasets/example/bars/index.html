@@ -47,10 +47,10 @@ var svg = d3.select('#chart').append('svg')
 .append('g')
 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-var data = files['bars/bars.tsv'].data;
+var _data = $package.resources[1].data;
 
-xScale.domain(data.map(xValue));
-yScale.domain([0, d3.max(data, yValue)]);
+xScale.domain(_data.map(xValue));
+yScale.domain([0, d3.max(_data, yValue)]);
 
 svg.append('g')
 .attr('class', 'x axis')
@@ -68,7 +68,7 @@ svg.append('g')
 .text('Frequency');
 
 svg.selectAll('.bar')
-.data(data)
+.data(_data)
 .enter().append('rect')
 .attr('class', 'bar')
 .attr('x', xMap)

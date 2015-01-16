@@ -25,7 +25,7 @@ var svg = d3.select("#chart").append("svg")
 .append("g")
 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-data = files['bars/bars.tsv'].data;
+data = $package.resources[3].data;
 
 data.forEach(function(d) {
 	d.frequency = +d.frequency;

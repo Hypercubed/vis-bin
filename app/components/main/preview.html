@@ -1,14 +1,16 @@
 
 <div class="report-header form-group-lg">
-  <h3>{{ main.name || 'name' }}</h3>
+  <h3>{{ main.dataPackage.name || 'name' }}</h3>
   <p class="lead">
-    {{ main.description || 'description' }}
+    {{ main.dataPackage.description || 'description' }}
   </p>
 </div>
 
 <div class="row container-fluid report-tabs">
 
-  <div id="result" class="col-xs-12" report-include files="main.files" refresh="main.ruid" get-svgs="main.svgs">
+  <div id="result" class="col-xs-12"
+    on-size-changed="main.refresh">
+    <div report-include data="main.dataPackage" refresh="main.ruid"></div>
   </div>
 
 </div>

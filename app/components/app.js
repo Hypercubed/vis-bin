@@ -23,9 +23,9 @@ angular
     'hc.marked'
   ])
   .config(function($logProvider){
-    $logProvider.debugEnabled(false);
+    $logProvider.debugEnabled(true);
   })
-  .config(function ($routeProvider) {
+  /* .config(function ($routeProvider) {
 
     var resolve = {
       dataService: ['$route', 'DataServiceFactory', function($route, DataServiceFactory) {
@@ -41,6 +41,11 @@ angular
       .when('/view/:id/', {
         templateUrl: 'components/main/preview.html',
         controller: 'MainCtrl as main',
+        resolve: MainCtrl.resolve
+      })
+      .when('/edit/:id/', {
+        templateUrl: 'components/main/main.html',
+        controller: 'MainCtrl as main',
         resolve: resolve
       })
       .when('/:conn/:id/', {
@@ -49,7 +54,7 @@ angular
         resolve: resolve
       })
       .when('/:id/', {
-        templateUrl: 'components/main/main.html',
+        templateUrl: 'components/main/preview.html',
         controller: 'MainCtrl as main',
         resolve: resolve
       })
@@ -57,7 +62,7 @@ angular
         redirectTo: '/view/index'
       });
 
-  })
+  }) */
   .config(function($tooltipProvider) {
     $tooltipProvider.options({ popupDelay: 0, animation: false })
   })
