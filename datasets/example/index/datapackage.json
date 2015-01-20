@@ -1,0 +1,14 @@
+{
+	"name": "Index",
+	"description": "Index of Visualizations",
+	"resources": [
+		"index.html",
+		"index.css",
+		{ "path": "../bars/datapackage.json", "link":"#/edit/bars", "show": false },
+		{ "path": "../barsII/datapackage.json", "link":"#/edit/barsII", "show": false },
+		{ "path": "../barsIII/datapackage.json", "link":"#/edit/barsIII", "show": false },
+		{ "path": "https://api.github.com/gists/3885705", "link":"#/gists/3885705", "show": false },
+		{ "path": "../hexbin/datapackage.json", "link":"#/edit/hexbin", "show": false },
+		{ "path": "../trains/datapackage.json", "link":"#/edit/trains", "show": false }
+	]
+}
