@@ -201,8 +201,8 @@ angular.module('myApp')
 
 	// try to follow http://dataprotocols.org/data-packages/
 
-	function cheapYaml(content) {
-		var split = content.split('\n\n', 2);
+	function cheapYaml(content) {  // not good
+		var split = content.split('\n\t*\n', 2);
 
 		var meta = { content: split[1] };
 		split[0].split(/[\r\n]+/).forEach(function(d) {
@@ -228,7 +228,7 @@ angular.module('myApp')
 			file.table = true;
 		} else if (file.type === 'text/plain') {
 			file.content = DOS2UNIX(file.content);
-			file.data = cheapYaml(file.content);
+			//file.data = cheapYaml(file.content);
 		} else if (file.type === 'application/json') {
 			file.data = angular.fromJson(file.content);
 			if (file.data.url && file.data.url.indexOf('api.github.com') > -1) {  // move

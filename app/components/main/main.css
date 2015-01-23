@@ -173,3 +173,19 @@ button[disabled] + .tooltip {
 .print-preview #result {
   width: 850px;
 }
+
+.file-drop {
+  width: 30px;
+  height: 55px;
+  position: absolute;
+  top: 0;
+  padding: 10px 5px;
+}
+
+.file-drop.hover {
+  font-size: 14px;
+}
+
+.file-drop.hover i:before {
+  content: "\e6fd";
+}

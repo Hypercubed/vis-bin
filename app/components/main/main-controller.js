@@ -70,6 +70,30 @@
 
     main.refresh();
 
+    main.newFile = function(file) {
+      var resource;
+
+      if (arguments.length < 1) {
+        resource = {
+          name: 'new.txt',
+          type: 'plain/text',
+          content: ''
+        };
+      } else {
+        resource = {
+          name: file.name,
+          type: file.type,
+          content: file.content || ''
+        };
+      }
+
+      resource.active = true;
+
+      main.dataPackage.resources.push(resource);
+      main.fileChanged(resource);
+      //main.refresh();
+    };
+
   }
 
   MainCtrl.resolve = {
@@ -196,6 +220,92 @@
     }]) */
     .controller('FileCtrl', function() {  // TODO: make directive
       //var vm = this;
+    })
+    .directive('fileDropzone', function($window) {
+      return {
+        restrict: 'A',
+        scope: {
+          file: '=',
+          fileName: '=',
+          dropped: '='
+        },
+        link: function(scope, element, attrs) {
+          var validMimeTypes = attrs.fileDropzone;
+
+          function processDragOverOrEnter(event) {
+            //console.log('processDragOverOrEnter');
+            if (event !== null) {
+              event.preventDefault();
+            }
+            element.addClass('hover');
+            (event.dataTransfer || event.originalEvent.dataTransfer).effectAllowed = 'copy';
+            return false;
+          }
+
+          function processDragLeave(event) {
+            //console.log('processDragExit');
+            if (event !== null) {
+              event.preventDefault();
+            }
+            element.removeClass('hover');
+            return false;
+          }
+
+          function checkSize(size) {
+            var _ref;
+            if (((_ref = attrs.maxFileSize) === (void 0) || _ref === '') || (size / 1024) / 1024 < attrs.maxFileSize) {
+              return true;
+            } else {
+              $window.alert('File must be smaller than ' + attrs.maxFileSize + ' MB');
+              return false;
+            }
+          }
+
+          function isTypeValid(type) {
+            if ((validMimeTypes === (void 0) || validMimeTypes === '') || validMimeTypes.indexOf(type) > -1) {
+              return true;
+            } else {
+              $window.alert("Invalid file type.  File must be one of following types " + validMimeTypes);
+              return false;
+            }
+          }
+
+          element.bind('dragover', processDragOverOrEnter);
+          element.bind('dragenter', processDragOverOrEnter);
+          element.bind('dragleave', processDragLeave);
+
+          function processDropFile(file) {
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+              file.content = evt.target.result;
+              if (checkSize(file.size) && isTypeValid(file.type)) {
+                return scope.$apply(function() {
+                  scope.dropped(file);
+                });
+              }
+            };
+            reader.readAsText(file);
+          }
+
+          return element.bind('drop', function(event) {
+            if (event !== null) {
+              event.preventDefault();
+            }
+
+            element.removeClass('hover');
+
+            var files = (event.dataTransfer || event.originalEvent.dataTransfer).files;
+
+
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              processDropFile(file);
+            }
+
+            return false;
+          });
+        }
+      };
     });
 
 })();
