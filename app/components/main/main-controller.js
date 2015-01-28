@@ -145,7 +145,7 @@
 
   angular.module('myApp')
     .controller('MainCtrl', MainCtrl)
-    .config(MainCtrl.config)
+    .config(['$routeProvider', MainCtrl.config])
     .directive('getSvgs', function() {  // Improve this, move to downloader?
 
       return {
