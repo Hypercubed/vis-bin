@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('myApp')
-.directive('reportInclude', function($window, $compile, $timeout, $log, DataServiceFactory) {
+.directive('reportInclude', function($window, $compile, $timeout, $log, debounce, DataServiceFactory) {
 	return {
 		restrict: 'AE',
 		scope: {
@@ -13,7 +13,6 @@ angular.module('myApp')
 		link: function(scope, element, attr) {
 
 			var reportContainer = element.find('div');
-
 
 			$log.debug('Report data', scope.dataPackage);
 
@@ -46,13 +45,15 @@ angular.module('myApp')
 			}
 
 			function onWindowResize() {
-				//console.log('onWindowResize');
-				if (width !== element.width() || height !== element.height()) {
+				console.log(width);
+				if (width > 0 && width !== element.width() || height !== element.height()) {
 					onRefresh();
 				}
 			}
 
-			function onRefresh() {
+			var onRefresh = debounce(refresh,1000);
+
+			function refresh() {
 
 				$log.debug('Generating report');
 
@@ -68,7 +69,7 @@ angular.module('myApp')
 				};
 
 				angular.forEach(scope.dataPackage.resources, function(file) {  // TODO: improve this, place in correct place, in correct order, handle other types, move to data service
-					if (scope.dataPackage.isDirty && file.isDirty) {
+					if (file.isDirty) {
 						DataServiceFactory.prototype.reparse(file);
 					}
 					if (file.name === 'index.html' || file.name === 'index.htm') {
@@ -121,13 +122,7 @@ angular.module('myApp')
 
 			onRefresh();
 
-			//scope.$watch('refresh', onRefresh);
-
-			scope.$on(attr.refreshOn, function() {
-				$timeout(function() {
-					onRefresh();
-				},1000);
-			});
+			scope.$on(attr.refreshOn, onRefresh);
 
 			$window.addEventListener('resize', onWindowResize);
 

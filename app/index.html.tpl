@@ -12,21 +12,19 @@
     <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="bower_components/codemirror/theme/twilight.css" />
     <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
-    <link rel="stylesheet" href="bower_components/bootstrap-material-design/dist/css/material.css" />
-    <link rel="stylesheet" href="bower_components/bootstrap-material-design/dist/css/ripples.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-material-design/dist/css/material-wfont.css" />
     <link rel="stylesheet" href="bower_components/angular-ui-grid/ui-grid.css" />
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) components/main.css -->
     <link rel="stylesheet" href="components/main/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="myApp">
+  <body ng-app="myApp" class="md-default-theme" layout="column" layout-margin layout-fill layout-padding>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-
-    <!-- Add your site or application content here -->
 
     <div class="header">
       <div class="container">
@@ -35,17 +33,14 @@
     </div>
 
     <div class="container">
-
       <div ng-view=""></div>
-
       <div class="footer">
         <p></p>
       </div>
     </div>
 
-
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-    <script>
+    <!-- script>
        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -53,7 +48,7 @@
 
        ga('create', '<%- ga %>');
        ga('send', 'pageview');
-    </script>
+    </script -->
 
     <!-- build:js(.) components/oldieshim.js -->
     <!--[if lt IE 9]>
@@ -82,7 +77,6 @@
     <script src="bower_components/codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script src="bower_components/codemirror/mode/css/css.js"></script>
     <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
     <script src="bower_components/papaparse/papaparse.js"></script>
@@ -90,11 +84,12 @@
     <script src="bower_components/angular-downloadsvg-directive/angular-downloadsvg-directive.js"></script>
     <script src="bower_components/d3-tip/index.js"></script>
     <script src="bower_components/_F/_F.js"></script>
-    <script src="bower_components/bootstrap-material-design/dist/js/material.js"></script>
-    <script src="bower_components/bootstrap-material-design/dist/js/ripples.js"></script>
     <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
     <script src="bower_components/marked/lib/marked.js"></script>
     <script src="bower_components/angular-marked/angular-marked.js"></script>
+    <script src="bower_components/hammerjs/hammer.js"></script>
+    <script src="bower_components/angular-material/angular-material.js"></script>
+    <script src="bower_components/ng-debounce/angular-debounce.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

@@ -17,6 +17,8 @@
     main.isPrintView = false;
 
     main.dataPackage = dataPackage;  // rename datapackage
+    main.selectedTab = 0;
+    main.tabs = [{ name: 'Report', index: -1 }];
 
     var hash = $location.hash();
     if (hash) {
@@ -27,7 +29,7 @@
       });
     }
 
-    main.refreshTabs =  function(file) {  // hack to redraw codemirror
+    main.refreshTabs = function(file) {  // hack to redraw codemirror
       if (!file.drawn) {
         $timeout(function() {
           file.drawn = true;
@@ -35,15 +37,36 @@
       }
     };
 
+    main._refreshTabs = function() {
+      var index = 1;
+      main.dataPackage.resources.forEach(function(d,i) {
+        if (d.show !== false) {
+          var tab = { name: d.name, resource: d, index: i };
+          if (!main.tabs[index]) {
+            main.tabs.push(tab);
+          } else {
+            angular.copy(tab, main.tabs[index]);
+          }
+          index++;
+        }
+      });
+    };
+
     main.fileChanged = function(file) {
       dataPackage.isDirty = true;                // any data changed
       if (file) { file.isDirty = true; }  // this data changed
+      main._refreshTabs();  // get names
     };
 
     main.refresh = function() {// todo: move to report directive?
       $log.debug('main.refresh');
 
-      main.showResult = true;  // switch to results tab
+      //if (main.dataPackage.resources.length < 1) { return; }
+
+      //main.showResult = true;  // switch to results tab
+      main.selectedTab = 0;
+      dataPackage.isDirty = true;
+
       $scope.$broadcast('report:refresh');
     };
 
@@ -69,6 +92,19 @@
     };
 
     main.refresh();
+    main._refreshTabs();
+
+    main.tabSelected = function(tabIndex) {
+      console.log('tab selected', tabIndex, main.selectedTab);
+
+      var tab = main.tabs[tabIndex];
+      main.resource = undefined;
+      if (tabIndex === 0 && dataPackage.isDirty) {
+        main.refresh();
+      } else if (tab && tab.resource) {
+        main.resource = tab.resource;
+      }
+    };
 
     main.newFile = function(file) {
       var resource;
@@ -91,7 +127,14 @@
 
       main.dataPackage.resources.push(resource);
       main.fileChanged(resource);
-      //main.refresh();
+
+      if (main.selectedTab === 0) {
+        main.refresh();
+      } else {
+        main.selectedTab = main.tabs.length-1;
+        main.tabSelected(main.selectedTab);
+      }
+
     };
 
   }

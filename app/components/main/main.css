@@ -4,6 +4,10 @@ body {
   padding-bottom: 20px;
 }
 
+html, body {
+  height: auto;
+}
+
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
@@ -31,6 +35,10 @@ body {
   border-top: 1px solid #e5e5e5;
 }
 
+.container {
+  min-width: 750px;
+}
+
 /* Customize container */
 @media (min-width: 768px) {
   .container {
@@ -45,14 +53,25 @@ body {
 /* Main marketing message and sign up button */
 .report-header {
   border-bottom: 1px solid #e5e5e5;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 .report-header  .lead {
-margin-bottom: 5px;
-font-size: 12px;
-font-weight: 300;
-line-height: 1;
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.progress-circular-icon > i {
+  width: 50px !important;
+  height: 50px !important;
+  line-height: 50px !important;
+}
+
+.progress-circular-icon > md-progress-circular {
+  position: absolute;
+  top: 0;
 }
 
 /* Supporting marketing content */
@@ -76,6 +95,10 @@ line-height: 1;
   .header {
     margin-bottom: 10px;
   }
+}
+
+.tab.ng-leave {
+  display: none;
 }
 
 .tab-pane {
@@ -143,6 +166,10 @@ button[disabled] + .tooltip {
   height: 500px;
 }
 
+.CodeMirror {
+  height: 500px;
+}
+
 .report-container:before, .report-container:after  {
   display: table;
   content: " ";
@@ -179,7 +206,7 @@ button[disabled] + .tooltip {
   height: 55px;
   position: absolute;
   top: 0;
-  padding: 10px 5px;
+  padding: 16px 5px;
 }
 
 .file-drop.hover {

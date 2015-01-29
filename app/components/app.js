@@ -14,7 +14,9 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ui.bootstrap',
+    'ngMaterial',
+    'debounce',
+    //'ui.bootstrap',
     'ui.codemirror',
     'ui.grid',
     'ui.grid.autoResize',
@@ -24,6 +26,12 @@ angular
   ])
   .config(function($logProvider){
     $logProvider.debugEnabled(true);
+  })
+  .config(function($mdThemingProvider) {
+    $mdThemingProvider.theme('default')
+      .primaryColor('blue')
+      .accentColor('orange')
+      .backgroundColor('blue-grey');
   })
   /* .config(function ($routeProvider) {
 
@@ -63,9 +71,9 @@ angular
       });
 
   }) */
-  .config(function($tooltipProvider) {
-    $tooltipProvider.options({ popupDelay: 0, animation: false })
-  })
+  //.config(function($tooltipProvider) {
+  //  $tooltipProvider.options({ popupDelay: 0, animation: false })
+  //})
   .run(function(editableOptions) {
     editableOptions.theme = 'bs3';
   });
