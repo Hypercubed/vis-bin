@@ -98,6 +98,7 @@
         <script src="components/config.js"></script>
         <script src="components/main/main-controller.js"></script>
         <script src="components/main/dataservice-factory.js"></script>
+        <script src="components/main/mimeType-service.js"></script>
         <script src="components/main/report-directive.js"></script>
         <!-- endbuild -->
 </body>

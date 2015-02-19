@@ -2,7 +2,8 @@
 
 angular.module('myApp')
 	.constant('myConfig', {
-		title: '<%= title %>'
+		title: '<%= title %>',
+		debug: '<%= debug %>'
 	})
 	.run(function($rootScope, myConfig) {
 		$rootScope.myConfig = myConfig;

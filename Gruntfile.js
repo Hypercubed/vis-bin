@@ -15,17 +15,21 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  var bowerJSON = require('./bower.json');
+
   // Configurable paths for the application
   var appConfig = {
-    app: require('./bower.json').appPath || 'app',
+    app: bowerJSON.appPath || 'app',
+    version: bowerJSON.version || '0.0.0',
     dist: 'dist',
     title: 'vis-bin',
     ga: 'UA-XXXXX-X',
-    data: './datasets/example'
+    data: './datasets/example',
+    debug: true
   };
 
-  var env = process.env.ENV || 'development';
-  var configFile = './' + env + '_config.json';
+  grunt.config('env', grunt.option('env') || process.env.GRUNT_ENV || 'development');
+  var configFile = './'+grunt.config('env')+'_config.json';
 
   if (grunt.file.exists(configFile)) {
     grunt.util._.extend(appConfig, grunt.file.readJSON(configFile));
@@ -83,8 +87,8 @@ module.exports = function (grunt) {
         tasks: ['newer:jshint:test', 'karma']
       },
       styles: {
-        files: ['<%= yeoman.app %>/components/{,*/}*.css'],
-        tasks: ['newer:copy:styles', 'autoprefixer']
+        files: ['<%= yeoman.app %>/components/{,*/}*.less'],
+        tasks: ['less:dist', 'autoprefixer']
       },
       gruntfile: {
         files: ['Gruntfile.js']
@@ -388,25 +392,41 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>/data'
         }
         ]
+      }//,
+      //styles: {
+      //  expand: true,
+      //  cwd: '<%= yeoman.app %>/components',
+      //  dest: '.tmp/components/',
+      //  src: '{,*/}*.css'
+      //}
+    },
+
+    less: {
+      options: {
+        compile: true,
+        paths: ['./bower_components']
       },
-      styles: {
-        expand: true,
-        cwd: '<%= yeoman.app %>/components',
-        dest: '.tmp/components/',
-        src: '{,*/}*.css'
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/components',
+          src: '{,*/}*.less',
+          dest: '.tmp/components/',
+          ext: '.css'
+        }]
       }
     },
 
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'copy:styles'
+        'less:dist'
       ],
       test: [
-        'copy:styles'
+        'less:dist'
       ],
       dist: [
-        'copy:styles',
+        'less:dist',
         'imagemin',
         'svgmin'
       ]

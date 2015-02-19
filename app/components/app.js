@@ -24,8 +24,8 @@ angular
     'hc.downloader',
     'hc.marked'
   ])
-  .config(function($logProvider){
-    $logProvider.debugEnabled(true);
+  .config(function($logProvider, myConfig){
+    $logProvider.debugEnabled(myConfig.debug);
   })
   .config(function($mdThemingProvider) {
     $mdThemingProvider.theme('default')

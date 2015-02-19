@@ -45,13 +45,11 @@ angular.module('myApp')
 			}
 
 			function onWindowResize() {
-				console.log(width);
+				//console.log(width);
 				if (width > 0 && width !== element.width() || height !== element.height()) {
 					onRefresh();
 				}
 			}
-
-			var onRefresh = debounce(refresh,1000);
 
 			function refresh() {
 
@@ -94,7 +92,7 @@ angular.module('myApp')
 							var t = angular.element(this);
 							var g = (t[0]).createShadowRoot();
 							return g;
-						}
+						};
 
 						//var shadow = reportContainer[0].createShadowRoot();
 						//var container = angular.element(shadow);
@@ -107,8 +105,9 @@ angular.module('myApp')
 						$compile(reportContainer.contents())(scope);
 					}
 
+					/* jshint -W061 */
 					content.js.forEach($window.eval);
-
+					/* jshint +W061 */
 
 				//});
 
@@ -120,8 +119,9 @@ angular.module('myApp')
 
 			}
 
-			onRefresh();
+			refresh();
 
+			var onRefresh = debounce(refresh,1000);
 			scope.$on(attr.refreshOn, onRefresh);
 
 			$window.addEventListener('resize', onWindowResize);
@@ -129,15 +129,15 @@ angular.module('myApp')
 		}
 	};
 })
-.directive('ngShadow', function(){
+.directive('ngShadow', function(){  // used?
 	return{
 		restrict: 'A',
 		transclude: true,
 		template: '<div id="shadowtranscludeparent"><div id="shadowtransclude" ng-transclude></div></div>',
-		link: function(scope, elem, attr){
+		link: function(){
 			var a = document.querySelector('#shadowtranscludeparent').createShadowRoot();
 			var q = document.querySelector('#shadowtransclude');
 			a.appendChild(q);
 		}
-	}
+	};
 });

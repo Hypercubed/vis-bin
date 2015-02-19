@@ -1,4 +1,3 @@
-/* Space out content a bit */
 body {
   padding-top: 5px;
   padding-bottom: 20px;
@@ -8,18 +7,11 @@ html, body {
   height: auto;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
 /* Custom page header */
 .header {
   border-bottom: 1px solid #e5e5e5;
 }
+
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
   margin-top: 0;
@@ -50,36 +42,28 @@ html, body {
   margin: 30px 0;
 }
 
-/* Main marketing message and sign up button */
 .report-header {
   border-bottom: 1px solid #e5e5e5;
   margin: 10px 0;
-}
 
-.report-header  .lead {
-  margin-bottom: 5px;
-  font-size: 12px;
-  font-weight: 300;
-  line-height: 1;
-}
+  .lead {
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1;
+  }
 
-.progress-circular-icon > i {
-  width: 50px !important;
-  height: 50px !important;
-  line-height: 50px !important;
-}
+  .progress-circular-icon > i {
+    width: 50px !important;
+    height: 50px !important;
+    line-height: 50px !important;
+  }
 
-.progress-circular-icon > md-progress-circular {
-  position: absolute;
-  top: 0;
-}
+  .progress-circular-icon > md-progress-circular {
+    position: absolute;
+    top: 0;
+  }
 
-/* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
-}
-.marketing p + h4 {
-  margin-top: 28px;
 }
 
 /* Responsive: Portrait tablets and up */
@@ -97,7 +81,7 @@ html, body {
   }
 }
 
-.tab.ng-leave {
+/* .tab.ng-leave {
   display: none;
 }
 
@@ -112,16 +96,21 @@ html, body {
 .tabs-main .nav-tabs > li.active {
   border-bottom: 4px solid white;
   box-sizing: border-box;
+} */
+
+.btn-group {
+  box-shadow: none;
+  margin: 2px 1px;
 }
 
-
-.report-tabs .btn-group {
-  box-shadow: none;
+.btn-group:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19);
   margin: 2px 1px;
 }
 
 .report-tabs .btn {
   padding: 5px 10px;
+  margin: 2px 1px 0 0;
 }
 
 @media print {
@@ -130,19 +119,7 @@ html, body {
   }
 }
 
-button[disabled] + .tooltip {
-  display: none !important;
-}
-
-.report-tabs .btn-group .btn:hover, .report-tabs .btn-group.open .btn {
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.23), 0 10px 30px rgba(0, 0, 0, 0.19) !important;
-}
-
-.report-tabs .btn {
-  margin: 2px 1px 0 0;
-}
-
-.editable-click, a.editable-click {
+/* .editable-click, a.editable-click {
   text-decoration: none;
   color: inherit;
   border-bottom: 0;
@@ -153,7 +130,7 @@ button[disabled] + .tooltip {
 .report-tabs .editable-input,
 .report-header .editable-input {
   width: 100%;
-}
+} */
 
 .report-tabs textarea.editable-input.editable-has-buttons,
 .report-tabs .CodeMirror {
@@ -170,18 +147,24 @@ button[disabled] + .tooltip {
   height: 500px;
 }
 
-.report-container:before, .report-container:after  {
-  display: table;
-  content: " ";
-}
+.report-container {
+  &:before, &:after  {
+    display: table;
+    content: " ";
+  }
 
-.report-container.dirty {
-  border: 1px solid red;
-  opacity: 0.6;
+  &.dirty {
+    border: 1px solid red;
+    opacity: 0.6;
+  }
 }
 
 #print-preview {
   position: relative;
+}
+
+.print-preview #result {
+  width: 800px;
 }
 
 .print-float {
@@ -193,12 +176,14 @@ button[disabled] + .tooltip {
 
 @media print {
   .container {
-    width: 850px;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
   }
-}
 
-.print-preview #result {
-  width: 850px;
+  md-tooltip {
+    display: none;
+  }
 }
 
 .file-drop {
@@ -207,12 +192,13 @@ button[disabled] + .tooltip {
   position: absolute;
   top: 0;
   padding: 16px 5px;
-}
 
-.file-drop.hover {
-  font-size: 14px;
-}
+  &.hover {
+    font-size: 14px;
 
-.file-drop.hover i:before {
-  content: "\e6fd";
+    i:before {
+      content: "\e6fd";
+    }
+  }
+
 }
