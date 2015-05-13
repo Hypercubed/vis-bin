@@ -1,7 +1,9 @@
 {
   "name": "vis-bin",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-ng-annotate": "^0.10.0"
+  },
   "devDependencies": {
     "grunt": "^0.4.1",
     "grunt-autoprefixer": "^0.7.3",

@@ -10,7 +10,7 @@
   * # MainCtrl
   * Controller of the myApp
   */
-  function MainCtrl($scope, $location, $log, $timeout, dataPackage) {
+  function MainCtrl($scope, $location, $log, $timeout, mimeType, dataPackage) {
 
     var main = this;
 
@@ -95,7 +95,7 @@
     main._refreshTabs();
 
     main.tabSelected = function(tabIndex) {
-      console.log('tab selected', tabIndex, main.selectedTab);
+      //console.log('tab selected', tabIndex, main.selectedTab);
 
       var tab = main.tabs[tabIndex];
       main.resource = undefined;
@@ -118,7 +118,7 @@
       } else {
         resource = {
           name: file.name,
-          type: file.type,
+          type: mimeType(file.name),
           content: file.content || ''
         };
       }
@@ -264,7 +264,7 @@
     .controller('FileCtrl', function() {  // TODO: make directive
       //var vm = this;
     })
-    .directive('fileDropzone', function($window) {
+    .directive('fileDropzone', function($window, mimeType) {
       return {
         restrict: 'A',
         scope: {
@@ -308,7 +308,7 @@
             if ((validMimeTypes === (void 0) || validMimeTypes === '') || validMimeTypes.indexOf(type) > -1) {
               return true;
             } else {
-              $window.alert('Invalid file type.  File must be one of following types ' + validMimeTypes);
+              $window.alert('Invalid file type '+type+'.  File must be one of following types ' + validMimeTypes);
               return false;
             }
           }
@@ -321,7 +321,8 @@
             var reader = new FileReader();
             reader.onload = function(evt) {
               file.content = evt.target.result;
-              if (checkSize(file.size) && isTypeValid(file.type)) {
+              var type = mimeType(file.name);
+              if (checkSize(file.size) && isTypeValid(type)) {
                 return scope.$apply(function() {
                   scope.dropped(file);
                 });

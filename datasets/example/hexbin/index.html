@@ -68,16 +68,16 @@
 				}
 
 				hexagon = hexagon
-				.data(hexbin(points), function(d) { return d.i + ',' + d.j; });
+					.data(hexbin(points), function(d) { return d.i + ',' + d.j; });
 
 				hexagon.exit().remove();
 
 				hexagon.enter().append('path')
-				.attr('d', hexbin.hexagon(19.5))
-				.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+					.attr('d', hexbin.hexagon(19.5))
+					.attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
 				hexagon
-				.style('fill', function(d) { return color(d.length); });
+					.style('fill', function(d) { return color(d.length); });
 			});
 
 			console.log('HexBin done');

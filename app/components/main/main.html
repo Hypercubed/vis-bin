@@ -7,7 +7,7 @@
       </div>
     </md-tab>
     <md-tab class="pull-right" ng-click="main.newFile()">
-      <div class="file-drop" file-dropzone="[text/plain]" data-max-file-size="3" dropped="main.newFile">
+      <div class="file-drop" file-dropzone="[text/plain,text/csv,text/tab-separated-values]" data-max-file-size="3" dropped="main.newFile">
         <i class="mdi-content-add-circle-outline"></i>
       </div>
     </md-tab>
@@ -81,7 +81,7 @@
 
   <div ng-if="main.resource">
 
-    <div layout-fill ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.type === 'text/tab-separated-values']">
+    <div layout-fill ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = 'code'">
 
       <md-content class="md-padding" layout="row" layout-sm="column">
         <md-input-container>
@@ -90,7 +90,9 @@
         </md-input-container>
       </md-content>
 
-      <!-- div class="col-sm-4 btn-toolbar" ng-show="file.table">
+      {{fileCtrl.mode}}
+
+      <!-- div class="col-sm-4 btn-toolbar pull-right" ng-show="main.resource.table">
         <div class="btn-group btn-group-sm pull-right">
           <button type="button" class="btn btn-primary btn-sm" tooltip="Table"
             ng-click="fileCtrl.mode = 'grid'"

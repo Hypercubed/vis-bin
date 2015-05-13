@@ -110,7 +110,7 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9000,
+        port: 9001,
         // Change this to '0.0.0.0' to access the server from outside.
         hostname: 'localhost',
         livereload: 35729
@@ -218,6 +218,22 @@ module.exports = function (grunt) {
       app: {
         src: ['<%= yeoman.app %>/index.html.tpl'],
         ignorePath:  /\.\.\//
+      },
+      test: {
+        devDependencies: true,
+        src: 'test/karma.conf.js',
+        ignorePath:  /\.\.\//,
+        fileTypes: {
+          js: {
+            block: /(([\s\t]*)\/\/\s*bower:*(\S*))(\n|\r|.)*?(\/\/\s*endbower)/gi,
+            detect: {
+              js: /'(.*\.js)'/gi
+            },
+            replace: {
+              js: '\'{{filePath}}\','
+            }
+          }
+        }
       }
     },
 
@@ -468,6 +484,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
+    'wiredep:test',
+    'template:server',
     'concurrent:test',
     'autoprefixer',
     'connect:test',

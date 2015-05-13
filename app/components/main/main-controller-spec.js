@@ -12,11 +12,16 @@ describe('Controller: MainCtrl', function () {
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
     MainCtrl = $controller('MainCtrl', {
-      $scope: scope
+      $scope: scope,
+      dataPackage: {
+        resources: []
+      }
     });
   }));
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    //expect(scope.awesomeThings.length).toBe(3);
+  it('should attach a dataPackage', function () {
+    expect(MainCtrl.isPrintView).toBe(false);
+    expect(MainCtrl.dataPackage).toBeDefined();
+    expect(MainCtrl.selectedTab).toBe(0);
   });
 });

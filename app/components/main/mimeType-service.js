@@ -2,8 +2,8 @@
 	'use strict';
 
 	angular.module('myApp')
-	.service('mimeType', function() {
-		
+	.factory('mimeType', function() {
+
 		var mtypes = {
 			'3gp': 'video/3gpp',
 			a: 'application/octet-stream',
@@ -187,13 +187,15 @@
 			zip: 'application/zip'
 		};
 
-		return function mimeType(ext) {
+		function getType(ext) {
 			ext = ext.toLowerCase().trim();
 			if (ext.indexOf('.') > -1) {
 				ext = ext.split('.').pop();
 			}
 			return mtypes[ext] || 'unknown';
-		};
+		}
+
+		return getType;
 
 	});
 

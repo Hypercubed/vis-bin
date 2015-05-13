@@ -1,97 +1,65 @@
 /* global Papa:true */
 
-'use strict';
+;(function() {
+	'use strict';
 
-angular.module('myApp')
-.factory('DataServiceFactory', function($http, $q, $log, mimeType) { //todo: make a service, returns a dataPackage?
-
-	// try to follow http://dataprotocols.org/data-packages/
-
-	/* function cheapYaml(content) {  // not good
-		var split = content.split('\n\t*\n', 2);
-
-		var meta = { content: split[1] };
-		split[0].split(/[\r\n]+/).forEach(function(d) {
-			var i = d.indexOf(':');
-			if (i > -1) {
-				var key = d.substring(0, i).trim();
-				var value = d.substring(i+1).trim();
-				meta[key] = value;
-			}
-		});
-		return meta;
-	} */
+	function papaTranslate(load, spec) {
+		var parse = Papa.parse(load.content, spec);
+		angular.extend(load, parse);
+		load.table = true;
+	}
 
 	function DOS2UNIX(content) {
 		return content
 			.replace(/\r/g,'\n');
 	}
 
-	function processByType(file) {
-		if (file.type === 'text/tab-separated-values') {  // TODO: more file types
-			var parse = Papa.parse(file.content, {header: true, delimiter: '\t', skipEmptyLines: true});
-			angular.extend(file, parse);
-			file.table = true;
-		} else if (file.type === 'text/plain') {
-			file.content = DOS2UNIX(file.content);
-			//file.data = cheapYaml(file.content);
-		} else if (file.type === 'application/json') {
-			file.data = angular.fromJson(file.content);
-			if (file.data.url && file.data.url.indexOf('api.github.com') > -1) {  // move
-				file.data.name = file.data.owner.login +'/'+file.data.id;
-				file.path = 'gists/'+file.data.id;
-			}
+	var _plugins = {};  // allow setting through api
+
+	_plugins['text/tab-separated-values'] = {
+		translate: function(load) {
+			papaTranslate(load, {header: true, delimiter: '\t', skipEmptyLines: true});
 		}
-		file.isDirty = false;
-		return file;
-	}
-
-	function DataService(conn, id) {
-		this.conn = conn || 'data';
-		this.id = id || 'index';
-		//this.package = null;
-	}
-
-	DataService.prototype.normalize = function(info) {
-		var base = this.conn + '/' + this.id;
-
-		if (!angular.isObject(info)) {  // if not already an object, make one
-			info = { name: info, path: info, show: true };
-		}
-
-		info.path = info.path || info.filename;
-
-		if (!info.url && info.path && base) {
-			info.url = base + '/' + info.path;
-		}
-
-		if (!info.name && info.url) {
-			info.name = info.url.split('/').pop();
-		}
-
-		if (!info.type && info.path) {
-			info.type = mimeType(info.path);
-		}
-
-		if (info.path.indexOf('api.github.com') > -1) {
-			info.type = mimeType('json');
-		}
-
-		if (info.type.indexOf('text') !== 0 && info.type !== 'application/javascript') {
-			info.show = false;
-		}
-
-		return info;
-
 	};
 
-	DataService.prototype.loadResource = function(resource) {  // resource is a resource object form a data package
+	_plugins['text/csv'] = {
+		translate: function(load) {
+			papaTranslate(load, {header: true, delimiter: ',', skipEmptyLines: true});
+		}
+	};
 
-		if (resource.url && !(resource.content || resource.data)) {
+	_plugins['text/plain'] = {
+		translate: function(load) {
+			load.content = DOS2UNIX(load.content);
+		}
+	};
 
-			$log.debug('Loading ',resource.url);
+	_plugins['application/json'] = {
+		translate: function(load) {
+			load.data = angular.fromJson(load.content);
+			if (load.data.url && load.data.url.indexOf('api.github.com') > -1) {  // move
+				load.data.name = load.data.owner.login +'/'+load.data.id;
+				load.path = 'gists/'+load.data.id;
+			}
+		}
+	};
 
-			var transform = function(data, headers) {
+	// try to follow http://dataprotocols.org/data-packages/
+
+	function processByType(load) {
+		var _p = _plugins[load.type];
+		if (_p && _p.translate) {
+			_p.translate(load);
+		}
+		load.isDirty = false;
+		return load;
+	}
+
+	function httpReq(resource) {
+		return {
+			method: 'GET',
+			url: resource.url,
+			transformResponse: function(data, headers) {
 				var contentType = headers('Content-Type');
 
 				if (contentType) {
@@ -100,68 +68,110 @@ angular.module('myApp')
 
 				resource.content = data;
 				return processByType(resource);
-			};
+			}
+		};
+	}
 
-			return $http.get(resource.url, {transformResponse: transform});
 
-		} else {
-			return {data: processByType(resource)};
+
+	angular.module('myApp')
+	.factory('DataServiceFactory', function($http, $q, $log, mimeType) { //todo: make a service, returns a dataPackage?
+
+		function DataService(conn, id) { // todo: make more like SystemJS ({ baseUrl: '...', other options })
+			this.conn = conn || 'data';
+			this.id = id || 'index';
 		}
 
-	};
+		DataService.prototype.constructor = DataService;
 
-	DataService.prototype.reparse = function reparse(file) {
-		if (arguments.length < 1) {
-			angular.forEach(this.package.resources, processByType);
-		} else {
-			processByType(file);
-		}
-	};
+		DataService.prototype.normalize = function(info) {
+			var base = this.conn + '/' + this.id;
 
-	DataService.prototype.load = function(conn, id) {
+			if (!angular.isObject(info)) {  // if not already an object, make one
+				info = { name: info, path: info, show: true };
+			}
 
-		this.conn = conn = conn || this.conn || 'data';
-		this.id = id = id || this.id || 'index';
+			info.path = info.path || info.filename;
 
-		var self = this;
+			if (!info.url && info.path && base) {
+				info.url = base + '/' + info.path;
+			}
 
-		//this.clear();
+			if (!info.name && info.url) {
+				info.name = info.url.split('/').pop();
+			}
 
-		var path = (conn === 'gists') ?
-			['https://api.github.com',conn,id] :
-			['datapackage.json'];
+			if (!info.type && info.path) {
+				info.type = mimeType(info.path); // todo: allow System type like 'text.txt!csv'
+			}
 
-		var _package = this.normalize({ name: id, path: path.join('/'), show: false });
+			if (info.path.indexOf('api.github.com') > -1) {
+				info.type = mimeType('json');
+			}
 
-		return this.loadResource(_package).then(function(res) {
+			if (info.type.indexOf('text') !== 0 && info.type !== 'application/javascript') {
+				info.show = false;
+			}
 
-			angular.extend(_package, res.data.data);
+			return info;
+		};
 
-			if (conn === 'gists') {
-				_package.resources = [];
-				angular.forEach(_package.files, function(file) {
-					_package.resources.push(file);
+		DataService.prototype.loadResource = function fetch(load) {
+			if (load.url && !(load.content || load.data)) {
+				return $http(httpReq(load));
+			} else {
+				return $q(function(resolve) {
+					resolve({data: processByType(load)});
 				});
 			}
+		};
 
-			_package.resources = _package.resources || ['index.html'];
+		DataService.prototype.reparse = function reparse(file) {
+			var resources = (arguments.length === 1) ? [file] : this.package.resources;
+			resources.forEach(processByType);
+		};
 
-			var q = [];
-			for (var key in _package.resources) {
-				_package.resources[key] = self.normalize(_package.resources[key]);
-				q.push(self.loadResource(_package.resources[key]));
-			}
+		DataService.prototype.load = function(conn, id) {
 
-			return $q.all(q).then(function() {
-				//self.package = _package;
-				//console.log(self);
-				return _package;
+			this.conn = conn = conn || this.conn || 'data';
+			this.id = id = id || this.id || 'index';
+
+			var self = this;
+
+			//this.clear();
+
+			var path = (conn === 'gists') ?
+				['https://api.github.com',conn,id] :
+				['datapackage.json'];
+
+			var _package = this.normalize({ name: id, path: path.join('/'), show: false });
+
+			return this.loadResource(_package).then(function(res) {
+
+				angular.extend(_package, res.data.data);
+
+				if (conn === 'gists') {
+					_package.resources = [];
+					angular.forEach(_package.files, function(file) {
+						_package.resources.push(file);
+					});
+				}
+
+				_package.resources = _package.resources || ['index.html'];
+				_package.resources = _package.resources.map(self.normalize, self);
+
+				var q = _package.resources.map(self.loadResource);
+
+				return $q.all(q).then(function() {
+					return _package;
+				});
+
 			});
 
-		});
+		};
 
-	};
+		return DataService;
 
-	return DataService;
+	});
 
-});
+})();
