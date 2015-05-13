@@ -1,8 +1,119 @@
-<div class="report-header form-group-lg"> <h3><a href="#" editable-text="main.title">{{ main.title || 'title' }}</a></h3> <p class="lead"> <a href="#" editable-textarea="main.description">{{ main.description || 'description' }}</a> </p> </div> <div class="row container-fluid report-tabs"> <button class="btn btn-primary pull-right" ng-click="main.refresh()"> <i class="glyphicon glyphicon-play"></i> Refresh result </button> <tabset> <tab heading="Result" select="main.refreshTabs()" active="main.showResult"> <div class="col-xs-12" ng-include="main.viewPath"> </div> </tab> <tab heading="Data" select="main.refreshTabs()"> <div class="col-xs-12"> <div class="code-mirror" ng-model="main.dataText" ui-refresh="main.uid" ui-codemirror="{
+<div class="xsample" layout="column"> {{main.name}} <md-tabs md-selected="main.selectedTab" class="hidden-print" ng-show="!main.isPrintView"> <md-tab class="tab" ng-repeat="tab in main.tabs" md-on-select="main.tabSelected($index)"> <div xxng-click="main.tabSelected($index)"> {{tab.name}} </div> </md-tab> <md-tab class="pull-right" ng-click="main.newFile()"> <div class="file-drop" file-dropzone="[text/plain,text/csv,text/tab-separated-values]" data-max-file-size="3" dropped="main.newFile"> <i class="mdi-content-add-circle-outline"></i> </div> </md-tab> </md-tabs> <div id="result" class="col-xs-12" ng-show="main.selectedTab === 0" ng-class="{ 'print-preview': main.isPrintView }"> <div class="pull-right"> <button class="btn btn-primary btn-sm hidden-print" tooltip="Refresh result" ng-if="!main.isPrintView" ng-click="main.refresh()" xxxng-disabled="!main.dataPackage.isDirty"> <i class="mdi-navigation-refresh"></i> <md-tooltip> Refresh result </md-tooltip> </button> <div class="btn-group hidden-print" ng-if="!main.isPrintView"> <button type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Download SVG" data-toggle="dropdown" aria-expanded="false" ng-disabled="main.svgs.length === 0"> <i class="mdi-image-collections"></i> <span class="caret"></span> </button> <ul class="dropdown-menu" role="menu"> <li><a href svg-download="#{{svg.id}}" title="{{svg.title}}" ng-repeat="svg in main.svgs">{{svg.title}}</a></li> </ul> <md-tooltip> Download SVG </md-tooltip> </div> <button ng-click="main.togglePreview()" type="button" class="btn btn-primary btn-sm dropdown-toggle hidden-print" tooltip="Print preview"> <i class="mdi-action-print"></i> <md-tooltip> Print preview </md-tooltip> </button> </div> <div get-svgs="main.svgs"> <div class="report-header form-group-lg list-group"> <div class="list-group-item"> <div class="row-action-primary hidden-print progress-circular-icon" ng-if="!main.isPrintView"> <i class="mdi-editor-insert-chart"></i> <md-progress-circular md-mode="indeterminate" ng-show="main.dataPackage.isDirty"> </md-progress-circular> </div> <div class="row-content"> <h3 class="list-group-item-heading">{{ main.dataPackage.name || 'name' }}</h3> <p class="lead"> {{ main.dataPackage.description || 'description' }} </p> </div> </div> </div> <div report-include data="main.dataPackage" refresh-on="report:refresh" print-view="main.isPrintView"> </div> </div> </div> <div ng-if="main.resource"> <div layout-fill ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = 'code'"> <md-content class="md-padding" layout="row" layout-sm="column"> <md-input-container> <label>Resource name</label> <input ng-model="main.resource.name"> </md-input-container> </md-content> <!-- div class="col-sm-4 btn-toolbar pull-right" ng-show="main.resource.table">
+        <div class="btn-group btn-group-sm pull-right">
+          <button type="button" class="btn btn-primary btn-sm" tooltip="Table"
+            ng-click="fileCtrl.mode = 'grid'"
+            ng-class="fileCtrl.mode === 'grid' ? 'disabled' : ''">
+            <i class="mdi-image-grid-on"></i>
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" tooltip="Text"
+            ng-click="fileCtrl.mode = 'code'"
+            ng-class="fileCtrl.mode === 'code' ? 'disabled' : ''">
+            <i class="glyphicon glyphicon-align-left"></i>
+          </button>
+         </div>
+       </div --> <div class="col-xs-12"> <div class="grid" ng-show="fileCtrl.mode === 'grid'" ui-grid="{ data: main.resource.data }" ui-grid-auto-resize> </div> <div class="code-mirror" ng-if="fileCtrl.mode === 'code'" ng-model="main.resource.content" ng-change="main.fileChanged(file)" ui-codemirror="{
             lineNumbers: true,
-            lineWrapping : true
-          }"></div> </div> </tab> <tab heading="Presentation" select="main.refreshTabs()"> <div class="col-xs-12"> <div class="code-mirror" ng-model="main.viewText" ui-refresh="main.uid" ui-codemirror="{
-            lineNumbers: true,
-            lineWrapping : true,
-            mode: 'htmlmixed'
-          }"></div> </div> </tab> </tabset> </div>
+            lineWrapping : false,
+            mode: file.type,
+            onLoad : main.codemirrorLoaded
+            }"> </div> <div ng-repeat="error in file.errors" class="alert alert-danger"> {{error.message}} <span ng-if="error.row">, check row {{error.row+2}}</span> </div> </div> </div> </div> </div> <!-- div class="row container-fluid report-tabs" ng-class="{ 'print-preview': main.isPrintView }">
+
+  <div class="pull-right">
+
+    <button class="btn btn-primary btn-sm hidden-print" tooltip="Refresh result" ng-if="!main.isPrintView"
+        ng-click="main.refresh()"
+        ng-disabled="!main.dataPackage.isDirty">
+        <i class="mdi-navigation-refresh"></i>
+    </button>
+
+    <div class="btn-group hidden-print" ng-if="!main.isPrintView">
+      <button type="button" class="btn btn-primary btn-sm dropdown-toggle" tooltip="Download SVG"
+        data-toggle="dropdown" aria-expanded="false"
+        ng-disabled="main.svgs.length === 0">
+        <i class="mdi-image-collections"></i> <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href svg-download="#{{svg.id}}" title="{{svg.title}}" ng-repeat="svg in main.svgs">{{svg.title}}</a></li>
+      </ul>
+    </div>
+
+    <button ng-click="main.togglePreview()" type="button" class="btn btn-primary btn-sm dropdown-toggle hidden-print" tooltip="Print preview">
+      <i class="mdi-action-print"></i>
+    </button>
+
+  </div>
+
+  <tabset class="tabs-main" ng-if="!main.isPrintView" >
+    <tab heading="Result" active="main.showResult" >
+    </tab>
+    <tab heading="{{ file.name }}" ng-repeat="file in main.dataPackage.resources"
+        ng-if="file.show !== false"
+        active="file.active" select="main.refreshTabs(file)" >
+
+      <div ng-controller="FileCtrl as fileCtrl" ng-init="fileCtrl.mode = {true: 'grid', false: 'code'}[file.type === 'text/tab-separated-values']">
+
+        <div>
+          <form class="col-sm-8 form-horizontal">
+            <div class="form-group">
+              <label for="name" class="col-sm-3 control-label">Resource name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="name" placeholder="Filename" ng-model="file.name" ng-change="main.fileChanged(file)">
+              </div>
+            </div>
+          </form>
+          <div class="col-sm-4 btn-toolbar" ng-show="file.table">
+            <div class="btn-group btn-group-sm pull-right">
+              <button type="button" class="btn btn-primary btn-sm" tooltip="Table"
+                ng-click="fileCtrl.mode = 'grid'"
+                ng-class="fileCtrl.mode === 'grid' ? 'disabled' : ''">
+                <i class="mdi-image-grid-on"></i>
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" tooltip="Text"
+                ng-click="fileCtrl.mode = 'code'"
+                ng-class="fileCtrl.mode === 'code' ? 'disabled' : ''">
+                <i class="glyphicon glyphicon-align-left"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-12">
+
+          <div class="grid" ng-show="fileCtrl.mode === 'grid'"
+            ui-grid="{ data: file.data }"
+            ui-grid-auto-resize></div>
+
+          <div class="code-mirror" ng-if="fileCtrl.mode === 'code' && file.active"
+            ng-model="file.content"
+            ng-change="main.fileChanged(file)"
+            ui-codemirror="{
+              lineNumbers: true,
+              lineWrapping : false,
+              mode: file.type,
+              onLoad : main.codemirrorLoaded
+            }"></div>
+
+            <div ng-repeat="error in file.errors" class="alert alert-danger">
+              {{error.message}} <span ng-if="error.row">, check row {{error.row+2}}</span>
+            </div>
+
+        </div>
+
+      </div>
+    </tab>
+    <tab select="main.newFile()">
+      <tab-heading class="file-drop" file-dropzone="[text/plain]" data-max-file-size="3" dropped="main.newFile" tooltip="Add resource">
+        <i class="mdi-content-add-circle-outline"></i>
+      </tab-heading>
+    </tab>
+  </tabset>
+
+  <div id="result" class="col-xs-12"
+    ng-show="main.showResult || main.isPrintView"
+    xxxng-class="{ dirty: main.isDirty }"
+    get-svgs="main.svgs">
+    <div report-include data="main.dataPackage" refresh-on="report:refresh" print-view="main.isPrintView">
+    </div>
+  </div>
+
+</div -->

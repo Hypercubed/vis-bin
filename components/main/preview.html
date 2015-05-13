@@ -1,0 +1,1 @@
+<div class="report-header form-group-lg"> <h3>{{ main.dataPackage.name || 'name' }}</h3> <p class="lead"> {{ main.dataPackage.description || 'description' }} </p> </div> <div class="row container-fluid report-tabs"> <div id="result" class="col-xs-12" on-size-changed="main.refresh"> <div report-include data="main.dataPackage" refresh="main.ruid"></div> </div> </div>
