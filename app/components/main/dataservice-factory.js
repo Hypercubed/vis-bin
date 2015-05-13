@@ -62,7 +62,7 @@
 			transformResponse: function(data, headers) {
 				var contentType = headers('Content-Type');
 
-				if (contentType) {
+				if (contentType && !resource.type) {
 					resource.type = contentType.split(';')[0];
 				}
 
@@ -71,8 +71,6 @@
 			}
 		};
 	}
-
-
 
 	angular.module('myApp')
 	.factory('DataServiceFactory', function($http, $q, $log, mimeType) { //todo: make a service, returns a dataPackage?
